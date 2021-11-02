@@ -3,8 +3,7 @@
 
 int main()
 {
-	int res = rave_main();
-	std::cout << "Hello World from Engine!\n";
+	rv::Result result = rave_main();
 	std::cin.ignore();
-	return res;
+	return result.fatal() ? EXIT_FAILURE : EXIT_SUCCESS;
 }

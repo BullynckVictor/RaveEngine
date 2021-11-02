@@ -1,3 +1,4 @@
 #pragma once
+#include "Engine/Utility/Result.h"
 
-extern int rave_main();
+extern rv::Result rave_main();
