@@ -102,7 +102,7 @@ std::string rv::ResultException::format(const Result& result, const std::string&
 		{
 			ss << "\n";
 			for (size_t i = 0; i < info.info().size(); ++i)
-				ss << info.info()[i] << (i == info.info().size() - 1 ? nullptr : "\n");
+				ss << info.info()[i] << (i == info.info().size() - 1 ? "" : "\n");
 		}
 
 		if (has_description)

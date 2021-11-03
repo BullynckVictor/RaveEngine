@@ -34,7 +34,7 @@ int main()
 	{
 		result = rave_main();
 		if (result.fatal())
-			message_box("rv::ResultException",  result.exception("Application Failed: 'rave_main()' returned fatal rv::Result").what(), result.severity());
+			message_box("rv::ResultException",  result.exception("Application failed: 'rave_main()' returned fatal result").what(), result.severity());
 	}
 	catch (const rv::ResultException& e)
 	{
