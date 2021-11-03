@@ -107,4 +107,17 @@ namespace rv
 
 	static constexpr ResultCode success = ResultCode("Success", RV_SEVERITY_INFO);
 	static constexpr ResultCode failure = ResultCode("Failure", RV_SEVERITY_ERROR);
+
+	template<typename T>
+	struct ResultValue : public Result
+	{
+		ResultValue(const T& value) : Result(success), value(value) {}
+		ResultValue(T&& value = {}) : Result(success), value(std::move(value)) {}
+		ResultValue(const Result& result, const T& value) : Result(result), value(value) {}
+		ResultValue(const Result& result, T&& value = {}) : Result(result), value(std::move(value)) {}
+		ResultValue(Result&& result, const T& value) : Result(std::move(result)), value(value) {}
+		ResultValue(Result&& result, T&& value = {}) : Result(std::move(result)), value(std::move(value)) {}
+
+		T value;
+	};
 }

@@ -7,7 +7,9 @@ namespace rv
 	class Engine
 	{
 	public:
-		static Result Create(Engine& engine);
+		Engine() = default;
+		static Result Create(Engine& engine, const GraphicsEngineInfo& info = {});
+		static Result Create(Engine& engine, const char* appName, const u32 version = VK_MAKE_VERSION(1, 0, 0));
 
 		GraphicsEngine graphics;
 	};

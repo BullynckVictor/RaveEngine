@@ -30,7 +30,10 @@
     <ClCompile Include="Core\source\Engine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Graphics\GraphicsEngine.cpp">
+    <ClCompile Include="Graphics\source\GraphicsEngine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphics\source\Instance.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -81,6 +84,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Utility\VkResult.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphics\Instance.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -12,11 +12,11 @@ namespace rv
 	static constexpr bool keep_info_on_success = false;
 #	endif
 
-	struct Assertion : public ErrorInfo
+	struct Condition : public ErrorInfo
 	{
-		Assertion() = default;
-		Assertion(bool condition, const std::string& info = {}, const char* cond_str = nullptr);
-		Assertion(const char* source, u64 line, bool condition, const std::string& info, const char* cond_str = nullptr);
+		Condition() = default;
+		Condition(bool condition, const std::string& info = {}, const char* cond_str = nullptr);
+		Condition(const char* source, u64 line, bool condition, const std::string& info, const char* cond_str = nullptr);
 
 		bool condition;
 		const char* cond_str;
@@ -29,6 +29,14 @@ namespace rv
 	Result assert(bool condition, const char* str, const char* source, u64 line);
 	Result assert(bool condition, const std::string& info);
 	Result assert(bool condition, const char* str, const char* source, u64 line, const std::string& info);
+
+	static constexpr ResultCode failed_condition = ResultCode("Failed Condition", RV_SEVERITY_ERROR);
+	static constexpr ResultCode succeeded_condition = ResultCode("Succeeded Condition", RV_SEVERITY_INFO);
+
+	Result check(bool condition);
+	Result check(bool condition, const char* str, const char* source, u64 line);
+	Result check(bool condition, const std::string& info);
+	Result check(bool condition, const char* str, const char* source, u64 line, const std::string& info);
 
 
 	struct VulkanResult : public ErrorInfo
@@ -58,11 +66,19 @@ namespace rv
 #define rv_result				rv::Result result = rv::success;
 #define rv_rif(res)				if (((result) = (res)).failed()) return result
 
+
 #define rv_try_vkr(vkr)						rv::try_vkr(vkr, RV_FILE_LINE)
 #define rv_try_vkr_info(vkr,msg)			rv::try_vkr(vkr, RV_FILE_LINE, msg)
 
 #define rif_try_vkr(vkr)					rv_rif(rv_try_vkr(vkr))
 #define rif_try_vkr_info(vkr, msg)			rv_rif(rv_try_vkr_info(vkr, msg))
+
+
+#define rv_check(cond)						rv::check(cond, #cond, RV_FILE_LINE)
+#define rv_check_info(cond, msg)			rv::check(cond, #cond, RV_FILE_LINE, msg)
+
+#define rif_check(cond)						rv_rif(rv_check(cond))
+#define rif_check_info(cond, msg)			rv_rif(rv_check_info(cond, msg))
 
 #ifdef RV_DEBUG
 #	define rv_assert(cond)					(rv::assert)(cond, #cond, RV_FILE_LINE)
@@ -75,8 +91,8 @@ namespace rv
 #	define rv_assert_vkr(res)				rv::assert_vkr(res, RV_FILE_LINE)
 #	define rv_assert_vkr_info(res, msg)		rv::assert_vkr(res, RV_FILE_LINE, msg)
 
-#	define rif_assert_vkr(res)				rv_rif(rv_assert(res))
-#	define rif_assert_vkr_info(res, msg)	rv_rif(rv_assert_info(res, msg))
+#	define rif_assert_vkr(res)				rv_rif(rv_assert_vkr(res))
+#	define rif_assert_vkr_info(res, msg)	rv_rif(rv_assert_vkr_info(res, msg))
 #else
 #	define rv_assert(cond)
 #	define rv_assert_info(cond, msg)

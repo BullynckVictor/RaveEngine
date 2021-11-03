@@ -7,15 +7,16 @@ rv::Result rave_main()
 
 	rv::Engine engine;
 
-	rv_rif(rv::Engine::Create(engine));
+	rv_rif(rv::Engine::Create(engine, "Test Application"));
 
-	uint32_t extensionCount = 0;
-	rif_try_vkr(vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr));
+	rv::u32 extensionCount;
+	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
+	std::vector<VkExtensionProperties> extensions(extensionCount);
+	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data());
 
-	rif_try_vkr(VK_ERROR_DEVICE_LOST);
+	for (const auto& e : extensions)
+		std::cout << e.extensionName << '\n';
 
-	std::cout << extensionCount << " extensions supported\n";
-	
 	std::cin.ignore();
 	return result;
 }

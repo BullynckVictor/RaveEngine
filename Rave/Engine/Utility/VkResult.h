@@ -116,7 +116,7 @@ namespace rv
 			case VK_ERROR_OUT_OF_HOST_MEMORY:									return "A host memory allocation has failed.";
 			case VK_ERROR_OUT_OF_DEVICE_MEMORY:									return "A device memory allocation has failed.";
 			case VK_ERROR_INITIALIZATION_FAILED:								return "Initialization of an object could not be completed for implementation-specific reasons.";
-			case VK_ERROR_DEVICE_LOST:											return "The logical or physical device has been lost. See Lost Device";
+			case VK_ERROR_DEVICE_LOST:											return "The logical or physical device has been lost.";
 			case VK_ERROR_MEMORY_MAP_FAILED:									return "Mapping of a memory object has failed.";
 			case VK_ERROR_LAYER_NOT_PRESENT:									return "A requested layer is not present or could not be loaded.";
 			case VK_ERROR_EXTENSION_NOT_PRESENT:								return "A requested extension is not supported.";

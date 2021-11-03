@@ -24,6 +24,7 @@ namespace rv
 	typedef uint64				u64;
 
 	typedef u8					byte;
+	typedef const char*			cstring;
 	typedef unsigned char		uchar;
 	typedef unsigned short		ushort;
 	typedef unsigned int		uint;

@@ -2,20 +2,20 @@
 #include "Engine/Utility/String.h"
 #include "Engine/Utility/VkResult.h"
 
-rv::Assertion::Assertion(bool condition, const std::string& info, const char* cond_str)
+rv::Condition::Condition(bool condition, const std::string& info, const char* cond_str)
 	:
 	ErrorInfo(
-		str("Assertion ", cond_str ? str("\"", cond_str, "\" ") : std::string(), condition ? " succeeded" : " failed", info.empty() ? "" : "\n" + info)
+		str("Condition ", cond_str ? str("\"", cond_str, "\" ") : std::string(), condition ? " succeeded" : " failed", info.empty() ? "" : "\n" + info)
 	),
 	condition(condition),
 	cond_str(cond_str)
 {
 }
 
-rv::Assertion::Assertion(const char* source, u64 line, bool condition, const std::string& info, const char* cond_str)
+rv::Condition::Condition(const char* source, u64 line, bool condition, const std::string& info, const char* cond_str)
 	:
 	ErrorInfo(
-		source, line, str("Assertion ", cond_str ? str("\"", cond_str, "\" ") : std::string(), condition ? " succeeded" : " failed", info.empty() ? "" : "\n" + info)
+		source, line, str("Condition ", cond_str ? str("\"", cond_str, "\" ") : std::string(), condition ? " succeeded" : " failed", info.empty() ? "" : "\n" + info)
 	),
 	condition(condition),
 	cond_str(cond_str)
@@ -30,9 +30,9 @@ rv::Result rv::assert(bool condition)
 			if constexpr (keep_info_on_success)
 				return succeeded_assertion;
 			else
-				return Result(succeeded_assertion, new Assertion(condition));
+				return Result(succeeded_assertion, new Condition(condition));
 		else
-			return Result(failed_assertion, new Assertion(condition));
+			return Result(failed_assertion, new Condition(condition));
 	}
 	else
 		return succeeded_assertion;
@@ -46,9 +46,9 @@ rv::Result rv::assert(bool condition, const char* str, const char* source, u64 l
 			if constexpr (keep_info_on_success)
 				return succeeded_assertion;
 			else
-				return Result(succeeded_assertion, new Assertion(source, line, condition, {}, str));
+				return Result(succeeded_assertion, new Condition(source, line, condition, {}, str));
 		else
-			return Result(failed_assertion, new Assertion(source, line, condition, {}, str));
+			return Result(failed_assertion, new Condition(source, line, condition, {}, str));
 	}
 	else
 		return succeeded_assertion;
@@ -62,9 +62,9 @@ rv::Result rv::assert(bool condition, const std::string& info)
 			if constexpr (keep_info_on_success)
 				return succeeded_assertion;
 			else
-				return Result(succeeded_assertion, new Assertion(condition, info));
+				return Result(succeeded_assertion, new Condition(condition, info));
 		else
-			return Result(failed_assertion, new Assertion(condition, info));
+			return Result(failed_assertion, new Condition(condition, info));
 	}
 	else
 		return succeeded_assertion;
@@ -78,12 +78,56 @@ rv::Result rv::assert(bool condition, const char* str, const char* source, u64 l
 			if constexpr (keep_info_on_success)
 				return succeeded_assertion;
 			else
-				return Result(succeeded_assertion, new Assertion(source, line, condition, info, str));
+				return Result(succeeded_assertion, new Condition(source, line, condition, info, str));
 		else
-			return Result(failed_assertion, new Assertion(source, line, condition, info, str));
+			return Result(failed_assertion, new Condition(source, line, condition, info, str));
 	}
 	else
 		return succeeded_assertion;
+}
+
+rv::Result rv::check(bool condition)
+{
+	if (condition)
+		if constexpr (keep_info_on_success)
+			return succeeded_condition;
+		else
+			return Result(succeeded_condition, new Condition(condition));
+	else
+		return Result(failed_condition, new Condition(condition));
+}
+
+rv::Result rv::check(bool condition, const char* str, const char* source, u64 line)
+{
+	if (condition)
+		if constexpr (keep_info_on_success)
+			return succeeded_condition;
+		else
+			return Result(succeeded_condition, new Condition(source, line, condition, {}, str));
+	else
+		return Result(failed_condition, new Condition(source, line, condition, {}, str));
+}
+
+rv::Result rv::check(bool condition, const std::string& info)
+{
+	if (condition)
+		if constexpr (keep_info_on_success)
+			return succeeded_condition;
+		else
+			return Result(succeeded_condition, new Condition(condition, info));
+	else
+		return Result(failed_condition, new Condition(condition, info));
+}
+
+rv::Result rv::check(bool condition, const char* str, const char* source, u64 line, const std::string& info)
+{
+	if (condition)
+		if constexpr (keep_info_on_success)
+			return succeeded_condition;
+		else
+			return Result(succeeded_condition, new Condition(source, line, condition, info, str));
+	else
+		return Result(failed_condition, new Condition(source, line, condition, info, str));
 }
 
 rv::VulkanResult::VulkanResult(VkResult result, const std::string& info)
