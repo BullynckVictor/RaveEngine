@@ -1,22 +1,9 @@
 #include "Engine/Utility/Result.h"
+#include "Engine/Utility/Exception.h"
 
 rv::ResultInfo::ResultInfo(const std::string& description, const std::vector<std::string>& info)
 	:
 	m_description(description),
-	m_info(info)
-{
-}
-
-rv::ResultInfo::ResultInfo(const std::string& description, std::vector<std::string>&& info)
-	:
-	m_description(description),
-	m_info(std::move(info))
-{
-}
-
-rv::ResultInfo::ResultInfo(std::string&& description, const std::vector<std::string>& info)
-	:
-	m_description(std::move(description)),
 	m_info(info)
 {
 }
@@ -83,4 +70,25 @@ const rv::ResultInfo& rv::Result::info() const
 const rv::ResultInfo* rv::Result::info_pointer() const
 {
 	return m_info.get();
+}
+
+rv::ResultException rv::Result::exception(const std::string& message) const
+{
+	return ResultException(*this, message);
+}
+
+void rv::Result::throw_exception(const std::string& message) const
+{
+	throw exception(message);
+}
+
+void rv::Result::expect(const std::string& message)
+{
+	expect(RV_SEVERITY_INFO, message);
+}
+
+void rv::Result::expect(Flags<Severity> severity, const std::string& message)
+{
+	if (!succeeded(severity))
+		throw_exception(message);
 }

@@ -128,6 +128,15 @@ namespace rv
 		}
 	}
 
+	template<typename H, typename... Args>
+	static constexpr H hash_t(const Args&... args)
+	{
+		if constexpr (sizeof...(Args) != 0)
+			return detail::hash<H>(args...);
+		else
+			return detail::fnv1a<H>(nullptr, 0);
+	}
+
 	template<typename... Args>
 	static constexpr size_t hash(const Args&... args)
 	{
@@ -144,14 +153,5 @@ namespace rv
 	static constexpr u64 hash64(const Args&... args)
 	{
 		return hash_t<u64>(args...);
-	}
-
-	template<typename H, typename... Args>
-	static constexpr H hash_t(const Args&... args)
-	{
-		if constexpr (sizeof...(Args) != 0)
-			return detail::hash<H>(args...);
-		else
-			return detail::fnv1a<H>(nullptr, 0);
 	}
 }

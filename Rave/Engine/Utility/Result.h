@@ -14,6 +14,8 @@ namespace rv
 		RV_SEVERITY_ERROR = 2,
 	};
 
+	class ResultException;
+
 	struct ResultCode
 	{
 	public:
@@ -54,8 +56,6 @@ namespace rv
 	public:
 		ResultInfo() = default;
 		ResultInfo(const std::string& description, const std::vector<std::string>& info = {});
-		ResultInfo(const std::string& description, std::vector<std::string>&& info = {});
-		ResultInfo(std::string&& description, const std::vector<std::string>& info = {});
 		ResultInfo(std::string&& description, std::vector<std::string>&& info = {});
 		virtual ~ResultInfo() = default;
 
@@ -84,10 +84,26 @@ namespace rv
 		const ResultInfo& info() const;
 		const ResultInfo* info_pointer() const;
 
+		ResultException exception(const std::string& message = {}) const;
+		void throw_exception(const std::string& message = {}) const;
+		void expect(const std::string& message = {});
+		void expect(Flags<Severity> severity, const std::string& message = {});
+
 	private:
 		ResultCode m_code;
 		std::shared_ptr<ResultInfo> m_info;
 	};
+
+	static constexpr const char* make_string(Severity severity)
+	{
+		switch (severity)
+		{
+			case RV_SEVERITY_INFO:		return "Info";
+			case RV_SEVERITY_WARNING:	return "Warning";
+			case RV_SEVERITY_ERROR:		return "Error";
+			default:					return "???";
+		}
+	}
 
 	static constexpr ResultCode success = ResultCode("Success", RV_SEVERITY_INFO);
 	static constexpr ResultCode failure = ResultCode("Failure", RV_SEVERITY_ERROR);

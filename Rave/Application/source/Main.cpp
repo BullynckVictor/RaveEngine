@@ -4,5 +4,5 @@
 rv::Result rave_main()
 {
 	std::cout << "Hello World from Application!\n";
-	return rv::success;
+	return rv::failure;
 }
