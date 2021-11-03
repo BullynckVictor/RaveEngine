@@ -7,16 +7,11 @@ rv::Result rave_main()
 
 	rv::Engine engine;
 
+	rv::debug.Log("Hello!");
+
 	rv_rif(rv::Engine::Create(engine, "Test Application"));
 
-	rv::u32 extensionCount;
-	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
-	std::vector<VkExtensionProperties> extensions(extensionCount);
-	vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, extensions.data());
-
-	for (const auto& e : extensions)
-		std::cout << e.extensionName << '\n';
-
+	rv::debug.Log("Hi!");
 	std::cin.ignore();
 	return result;
 }

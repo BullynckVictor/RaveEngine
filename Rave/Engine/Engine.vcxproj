@@ -97,6 +97,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Core\source\Engine.cpp" />
+    <ClCompile Include="Core\source\Logger.cpp" />
     <ClCompile Include="Core\source\Main.cpp" />
     <ClCompile Include="Graphics\source\GraphicsEngine.cpp" />
     <ClCompile Include="Graphics\source\Instance.cpp" />
@@ -106,6 +107,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\CompileTimeInfo.h" />
+    <ClInclude Include="Core\Logger.h" />
     <ClInclude Include="Core\Engine.h" />
     <ClInclude Include="Core\Main.h" />
     <ClInclude Include="Core\SystemInclude.h" />
@@ -113,6 +115,7 @@
     <ClInclude Include="Graphics\Instance.h" />
     <ClInclude Include="Graphics\Vulkan.h" />
     <ClInclude Include="Include.h" />
+    <ClInclude Include="Utility\UnknownObject.h" />
     <ClInclude Include="Utility\Error.h" />
     <ClInclude Include="Utility\Exception.h" />
     <ClInclude Include="Utility\Flags.h" />
