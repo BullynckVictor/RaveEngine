@@ -5,12 +5,10 @@
 namespace rv
 {
 	template<typename E, typename D = size_t>
+		requires std::is_enum_v<E> && std::is_unsigned_v<D>
 	struct Flags
 	{
 	public:
-		static_assert(std::is_enum_v<E>);
-		static_assert(std::is_unsigned_v<D>);
-
 		constexpr Flags() : m_data(0) {}
 		constexpr Flags(E flag) : m_data((D)0x1 << flag) {}
 		constexpr Flags(const Flags& rhs) : m_data(rhs.m_data) {}

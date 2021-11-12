@@ -27,7 +27,7 @@ rv::Result rv::assert(bool condition)
 	if constexpr (cti.build.debug)
 	{
 		if (condition)
-			if constexpr (keep_info_on_success)
+			if constexpr (!keep_info_on_success)
 				return succeeded_assertion;
 			else
 				return Result(succeeded_assertion, new Condition(condition));
@@ -43,7 +43,7 @@ rv::Result rv::assert(bool condition, const char* str, const char* source, u64 l
 	if constexpr (cti.build.debug)
 	{
 		if (condition)
-			if constexpr (keep_info_on_success)
+			if constexpr (!keep_info_on_success)
 				return succeeded_assertion;
 			else
 				return Result(succeeded_assertion, new Condition(source, line, condition, {}, str));
@@ -59,7 +59,7 @@ rv::Result rv::assert(bool condition, const std::string& info)
 	if constexpr (cti.build.debug)
 	{
 		if (condition)
-			if constexpr (keep_info_on_success)
+			if constexpr (!keep_info_on_success)
 				return succeeded_assertion;
 			else
 				return Result(succeeded_assertion, new Condition(condition, info));
@@ -75,7 +75,7 @@ rv::Result rv::assert(bool condition, const char* str, const char* source, u64 l
 	if constexpr (cti.build.debug)
 	{
 		if (condition)
-			if constexpr (keep_info_on_success)
+			if constexpr (!keep_info_on_success)
 				return succeeded_assertion;
 			else
 				return Result(succeeded_assertion, new Condition(source, line, condition, info, str));
@@ -89,7 +89,7 @@ rv::Result rv::assert(bool condition, const char* str, const char* source, u64 l
 rv::Result rv::check(bool condition)
 {
 	if (condition)
-		if constexpr (keep_info_on_success)
+		if constexpr (!keep_info_on_success)
 			return succeeded_condition;
 		else
 			return Result(succeeded_condition, new Condition(condition));
@@ -100,7 +100,7 @@ rv::Result rv::check(bool condition)
 rv::Result rv::check(bool condition, const char* str, const char* source, u64 line)
 {
 	if (condition)
-		if constexpr (keep_info_on_success)
+		if constexpr (!keep_info_on_success)
 			return succeeded_condition;
 		else
 			return Result(succeeded_condition, new Condition(source, line, condition, {}, str));
@@ -111,7 +111,7 @@ rv::Result rv::check(bool condition, const char* str, const char* source, u64 li
 rv::Result rv::check(bool condition, const std::string& info)
 {
 	if (condition)
-		if constexpr (keep_info_on_success)
+		if constexpr (!keep_info_on_success)
 			return succeeded_condition;
 		else
 			return Result(succeeded_condition, new Condition(condition, info));
@@ -122,7 +122,7 @@ rv::Result rv::check(bool condition, const std::string& info)
 rv::Result rv::check(bool condition, const char* str, const char* source, u64 line, const std::string& info)
 {
 	if (condition)
-		if constexpr (keep_info_on_success)
+		if constexpr (!keep_info_on_success)
 			return succeeded_condition;
 		else
 			return Result(succeeded_condition, new Condition(source, line, condition, info, str));

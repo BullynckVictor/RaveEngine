@@ -69,6 +69,7 @@ rv::Result rv::DebugMessenger::Create(DebugMessenger& messenger, const Instance&
 	messenger.instance = &instance;
 
 	VkDebugUtilsMessengerCreateInfoEXT createInfo = CreateInfo();
+	createInfo.messageSeverity = severity;
 	createInfo.pUserData = &messenger;
 
 	PFN_vkCreateDebugUtilsMessengerEXT vkCreateDebugUtilsMessengerEXT = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance.instance, "vkCreateDebugUtilsMessengerEXT");
