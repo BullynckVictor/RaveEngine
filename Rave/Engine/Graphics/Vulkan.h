@@ -2,6 +2,7 @@
 #include "Engine/Core/CompileTimeInfo.h"
 #ifdef RV_PLATFORM_WINDOWS
 #define VK_USE_PLATFORM_WIN32_KHR
+#include "Engine/Core/SystemInclude.h"
 #endif
 #include <vulkan/vulkan.h>
 

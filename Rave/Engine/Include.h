@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Engine/Core/CompileTimeInfo.h"
+#include "Engine/Core/SystemInclude.h"
 #include "Engine/Core/Main.h"
 #include "Engine/Core/Engine.h"
 #include "Engine/Core/Logger.h"
@@ -18,3 +19,4 @@
 #include "Engine/Utility/UnknownObject.h"
 #include "Engine/Utility/Timer.h"
 #include "Engine/Utility/PerformanceLogger.h"
+#include "Engine/Utility/Optional.h"
