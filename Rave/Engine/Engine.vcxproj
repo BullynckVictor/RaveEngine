@@ -21,13 +21,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -99,11 +99,13 @@
     <ClCompile Include="Core\source\Engine.cpp" />
     <ClCompile Include="Core\source\Logger.cpp" />
     <ClCompile Include="Core\source\Main.cpp" />
+    <ClCompile Include="Graphics\source\DebugMessenger.cpp" />
     <ClCompile Include="Graphics\source\GraphicsEngine.cpp" />
     <ClCompile Include="Graphics\source\Instance.cpp" />
     <ClCompile Include="Utility\source\Error.cpp" />
     <ClCompile Include="Utility\source\Exception.cpp" />
     <ClCompile Include="Utility\source\Result.cpp" />
+    <ClCompile Include="Utility\source\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\CompileTimeInfo.h" />
@@ -111,10 +113,13 @@
     <ClInclude Include="Core\Engine.h" />
     <ClInclude Include="Core\Main.h" />
     <ClInclude Include="Core\SystemInclude.h" />
+    <ClInclude Include="Graphics\DebugMessenger.h" />
     <ClInclude Include="Graphics\GraphicsEngine.h" />
     <ClInclude Include="Graphics\Instance.h" />
     <ClInclude Include="Graphics\Vulkan.h" />
     <ClInclude Include="Include.h" />
+    <ClInclude Include="Utility\PerformanceLogger.h" />
+    <ClInclude Include="Utility\Timer.h" />
     <ClInclude Include="Utility\UnknownObject.h" />
     <ClInclude Include="Utility\Error.h" />
     <ClInclude Include="Utility\Exception.h" />

@@ -5,6 +5,7 @@
 #include "Engine/Utility/UnknownObject.h"
 #include <deque>
 #include <chrono>
+#include <ios>
 
 namespace rv
 {
@@ -24,7 +25,7 @@ namespace rv
 	class Logger
 	{
 	public:
-		Logger(Flags<Severity> allowedSeverity = RV_SEVERITY_INFO | RV_SEVERITY_WARNING | RV_SEVERITY_ERROR);
+		Logger(Flags<Severity> allowedSeverity = combine(RV_SEVERITY_INFO, RV_SEVERITY_WARNING, RV_SEVERITY_ERROR));
 		virtual ~Logger() = default;
 
 		void Log(const Message& message);
@@ -57,7 +58,7 @@ namespace rv
 	class DebugLogger : public Logger
 	{
 	public:
-		DebugLogger(Flags<Severity> allowedSeverity = RV_SEVERITY_INFO | RV_SEVERITY_WARNING | RV_SEVERITY_ERROR, const char* dumpFile = "Application/log.txt");
+		DebugLogger(Flags<Severity> allowedSeverity = combine(RV_SEVERITY_INFO, RV_SEVERITY_WARNING, RV_SEVERITY_ERROR), const char* dumpFile = "Application/log.txt");
 		~DebugLogger();
 
 		const char* dumpFile;
@@ -69,7 +70,7 @@ namespace rv
 	class DebugLogger
 	{
 	public:
-		DebugLogger(Flags<Severity> allowedSeverity = RV_SEVERITY_INFO | RV_SEVERITY_WARNING | RV_SEVERITY_ERROR, const char* dumpFile = "Application/log.txt");
+		DebugLogger(Flags<Severity> allowedSeverity = combine(RV_SEVERITY_INFO, RV_SEVERITY_WARNING, RV_SEVERITY_ERROR), const char* dumpFile = "Application/log.txt");
 
 		void Log(const Message& message);
 		void Log(const std::string& message, Severity severity = RV_SEVERITY_INFO);
@@ -84,7 +85,9 @@ namespace rv
 }
 
 #ifdef RV_DEBUG_LOGGER
-#define rv_log(msg) rv::debug.Log(msg)
+#define rv_log(msg)					rv::debug.Log(msg)
+#define rv_debug_logger_only(code)	code
 #else
 #define rv_log(msg)
+#define rv_debug_logger_only(code)
 #endif

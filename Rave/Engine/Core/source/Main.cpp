@@ -2,6 +2,7 @@
 #include "Engine/Core/Main.h"
 #include "Engine/Utility/Exception.h"
 #include "Engine/Core/SystemInclude.h"
+#include "Engine/Graphics/DebugMessenger.h"
 
 void message_box(const char* title, const char* text, rv::Severity severity)
 {
@@ -34,7 +35,23 @@ int main()
 	{
 		result = rave_main();
 		if (result.fatal())
-			message_box("rv::ResultException",  result.exception("Application failed: 'rave_main()' returned fatal result").what(), result.severity());
+		{
+			message_box("rv::ResultException", result.exception("Application failed: 'rave_main()' returned fatal result").what(), result.severity());
+		}
+		else
+		{
+			result = rv::DebugMessenger::StaticCheck();
+			if (result.fatal())
+			{
+				message_box("rv::ResultException", result.exception("Application failed: Vulkan Debug Messenger returned fatal result").what(), result.severity());
+				rv::DebugMessenger::StaticFlush();
+			}
+			else
+			{
+				rv::DebugMessenger::StaticFlush();
+				std::cin.ignore();
+			}
+		}
 	}
 	catch (const rv::ResultException& e)
 	{

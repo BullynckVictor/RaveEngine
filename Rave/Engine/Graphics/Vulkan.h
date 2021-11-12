@@ -8,7 +8,7 @@
 namespace rv
 {
 	template<typename T>
-	void destroy(T* object, VkDevice* device = nullptr, VkInstance* instance = nullptr);
+	void destroy(T* object, VkDevice device = VK_NULL_HANDLE, VkInstance instance = VK_NULL_HANDLE);
 
 	template<typename T>
 	static T* move(T*& dead)
@@ -20,11 +20,11 @@ namespace rv
 
 
 	template<typename T>
-	static void release(T*& object)
+	static void release(T*& object, VkDevice device = VK_NULL_HANDLE, VkInstance instance = VK_NULL_HANDLE)
 	{
 		if (object)
 		{
-			destroy(object);
+			destroy(object, device, instance);
 			object = nullptr;
 		}
 	}

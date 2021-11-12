@@ -16,3 +16,5 @@
 #include "Engine/Utility/Exception.h"
 #include "Engine/Utility/Error.h"
 #include "Engine/Utility/UnknownObject.h"
+#include "Engine/Utility/Timer.h"
+#include "Engine/Utility/PerformanceLogger.h"

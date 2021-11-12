@@ -77,7 +77,7 @@ namespace rv
 		Severity severity() const;
 
 		bool succeeded(Flags<Severity> severity = RV_SEVERITY_INFO) const;
-		bool failed(Flags<Severity> severity = RV_SEVERITY_WARNING | RV_SEVERITY_ERROR) const;
+		bool failed(Flags<Severity> severity = combine(RV_SEVERITY_WARNING, RV_SEVERITY_ERROR)) const;
 		bool fatal() const;
 
 		bool has_info() const;

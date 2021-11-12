@@ -14,5 +14,13 @@ rv::Result rv::GraphicsEngine::Create(GraphicsEngine& graphics, const GraphicsEn
 
 	rv_rif(Instance::Create(graphics.instance, info.app));
 
+	rv_debug_only(rv_rif(DebugMessenger::Create(graphics.debug, graphics.instance)));
+
 	return result;
+}
+
+rv::Result rv::GraphicsEngine::CheckResults()
+{
+	rv_debug_only(return debug.Check());
+	return success;
 }

@@ -38,6 +38,12 @@ namespace rv
 
 		void Release();
 
-		VkInstance instance;
+		VkInstance instance = VK_NULL_HANDLE;
 	};
+
+	template<typename T>
+	static void release(T*& object, const Instance& instance)
+	{
+		release(object, VK_NULL_HANDLE, instance.instance);
+	}
 }

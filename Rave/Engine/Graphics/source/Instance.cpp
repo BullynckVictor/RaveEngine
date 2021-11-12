@@ -1,8 +1,11 @@
 #include "Engine/Graphics/Instance.h"
+#include "Engine/Graphics/DebugMessenger.h"
 #include "Engine/Utility/Error.h"
+#include "Engine/Utility/String.h"
+#include "Engine/Core/Logger.h"
 
 template<>
-void rv::destroy(VkInstance instance, VkDevice* device, VkInstance* i)
+void rv::destroy(VkInstance instance, VkDevice device, VkInstance i)
 {
 	vkDestroyInstance(instance, nullptr);
 }
@@ -53,7 +56,7 @@ rv::ResultValue<bool> rv::ValidationLayers::supported() const
 {
 	rv_result;
 
-	u32 layerCount;
+	u32 layerCount = 0;
 	rif_assert_vkr(vkEnumerateInstanceLayerProperties(&layerCount, nullptr));
 	std::vector<VkLayerProperties> availableLayers(layerCount);
 	rif_assert_vkr(vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data()));
@@ -120,7 +123,19 @@ rv::Result rv::Instance::Create(Instance& instance, const ApplicationInfo& app, 
 	createInfo.enabledLayerCount = (u32)layers.layers.size();
 	createInfo.ppEnabledLayerNames = layers.layers.data();
 
-	rif_try_vkr_info(vkCreateInstance(&createInfo, nullptr, &instance.instance), "Unable to create Instance");
+
+	if constexpr (cti.build.debug)
+	{
+		auto debug = DebugMessenger::CreateInfo();
+		debug.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+		createInfo.pNext = &debug;
+		rif_try_vkr_info(vkCreateInstance(&createInfo, nullptr, &instance.instance), "Unable to create Instance");
+	}
+	else
+	{
+		rif_try_vkr_info(vkCreateInstance(&createInfo, nullptr, &instance.instance), "Unable to create Instance");
+	}
+	rv_log(str("Created Instance \"", app.info.pApplicationName, '\"'));
 
 	return result;
 }

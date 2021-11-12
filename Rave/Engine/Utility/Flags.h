@@ -27,9 +27,9 @@ namespace rv
 		constexpr bool operator<  (const Flags& rhs) const { return m_data <  rhs.m_data; }
 		constexpr bool operator>  (const Flags& rhs) const { return m_data >  rhs.m_data; }
 
-		constexpr Flags  operator|  (const Flags& rhs) { return m_data |  rhs.m_data; }
-		constexpr Flags  operator&  (const Flags& rhs) { return m_data &  rhs.m_data; }
-		constexpr Flags  operator^  (const Flags& rhs) { return m_data ^  rhs.m_data; }
+		constexpr Flags  operator|  (const Flags& rhs) { return m_data | rhs.m_data; }
+		constexpr Flags  operator&  (const Flags& rhs) { return m_data & rhs.m_data; }
+		constexpr Flags  operator^  (const Flags& rhs) { return m_data ^ rhs.m_data; }
 		constexpr Flags& operator|= (const Flags& rhs) { m_data |= rhs.m_data; return *this; }
 		constexpr Flags& operator&= (const Flags& rhs) { m_data &= rhs.m_data; return *this; }
 		constexpr Flags& operator^= (const Flags& rhs) { m_data ^= rhs.m_data; return *this; }
@@ -52,9 +52,13 @@ namespace rv
 		D m_data;
 	};
 
-	template<typename E, typename D = size_t> static constexpr Flags<E, D> operator| (const E& a, const E& b) { return Flags<E, D>(a) | Flags<E, D>(b); }
-	template<typename E, typename D = size_t> static constexpr Flags<E, D> operator& (const E& a, const E& b) { return Flags<E, D>(a) & Flags<E, D>(b); }
-	template<typename E, typename D = size_t> static constexpr Flags<E, D> operator^ (const E& a, const E& b) { return Flags<E, D>(a) ^ Flags<E, D>(b); }
+	template<typename E, typename D = size_t, typename... Args> static constexpr Flags<E, D> combine(const E& flag, const Args&... args)
+	{
+		if constexpr (sizeof...(Args) != 0)
+			return Flags<E, D>(flag) | combine(args...);
+		else
+			return Flags<E, D>(flag);
+	}
 
 	template<typename E>
 	using Flags32 = Flags<E, u32>;
