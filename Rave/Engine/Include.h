@@ -20,3 +20,5 @@
 #include "Engine/Utility/Timer.h"
 #include "Engine/Utility/PerformanceLogger.h"
 #include "Engine/Utility/Optional.h"
+#include "Engine/Utility/Vector.h"
+#include "Engine/Utility/Random.h"

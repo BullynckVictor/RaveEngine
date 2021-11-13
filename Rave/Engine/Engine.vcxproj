@@ -105,6 +105,7 @@
     <ClCompile Include="Graphics\source\Instance.cpp" />
     <ClCompile Include="Utility\source\Error.cpp" />
     <ClCompile Include="Utility\source\Exception.cpp" />
+    <ClCompile Include="Utility\source\Random.cpp" />
     <ClCompile Include="Utility\source\Result.cpp" />
     <ClCompile Include="Utility\source\Timer.cpp" />
   </ItemGroup>
@@ -122,6 +123,7 @@
     <ClInclude Include="Include.h" />
     <ClInclude Include="Utility\Optional.h" />
     <ClInclude Include="Utility\PerformanceLogger.h" />
+    <ClInclude Include="Utility\Random.h" />
     <ClInclude Include="Utility\Timer.h" />
     <ClInclude Include="Utility\UnknownObject.h" />
     <ClInclude Include="Utility\Error.h" />
@@ -132,6 +134,7 @@
     <ClInclude Include="Utility\Result.h" />
     <ClInclude Include="Utility\String.h" />
     <ClInclude Include="Utility\Types.h" />
+    <ClInclude Include="Utility\Vector.h" />
     <ClInclude Include="Utility\VkResult.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
