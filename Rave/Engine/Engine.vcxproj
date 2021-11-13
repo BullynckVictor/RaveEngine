@@ -99,6 +99,7 @@
     <ClCompile Include="Core\source\Engine.cpp" />
     <ClCompile Include="Core\source\Logger.cpp" />
     <ClCompile Include="Core\source\Main.cpp" />
+    <ClCompile Include="Core\source\Window.cpp" />
     <ClCompile Include="Graphics\source\DebugMessenger.cpp" />
     <ClCompile Include="Graphics\source\Device.cpp" />
     <ClCompile Include="Graphics\source\GraphicsEngine.cpp" />
@@ -115,6 +116,7 @@
     <ClInclude Include="Core\Engine.h" />
     <ClInclude Include="Core\Main.h" />
     <ClInclude Include="Core\SystemInclude.h" />
+    <ClInclude Include="Core\Window.h" />
     <ClInclude Include="Graphics\DebugMessenger.h" />
     <ClInclude Include="Graphics\Device.h" />
     <ClInclude Include="Graphics\GraphicsEngine.h" />

@@ -515,6 +515,6 @@ namespace rv
 
 	template<size_t S, typename T>
 	using Extent = BasicVector<S, T, detail::ExtentIdentifier>;
-	typedef Extent<2, float>	Extent2D;
-	typedef Extent<3, float>	Extent3D;
+	typedef Extent<2, uint>		Extent2D;
+	typedef Extent<3, uint>		Extent3D;
 }

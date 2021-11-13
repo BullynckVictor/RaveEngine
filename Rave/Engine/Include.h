@@ -5,6 +5,7 @@
 #include "Engine/Core/Main.h"
 #include "Engine/Core/Engine.h"
 #include "Engine/Core/Logger.h"
+#include "Engine/Core/Window.h"
 
 #include "Engine/Graphics/Vulkan.h"
 #include "Engine/Graphics/GraphicsEngine.h"

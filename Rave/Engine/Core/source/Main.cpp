@@ -46,11 +46,6 @@ int main()
 				message_box("rv::ResultException", result.exception("Application failed: Vulkan Debug Messenger returned fatal result").what(), result.severity());
 				rv::DebugMessenger::StaticFlush();
 			}
-			else
-			{
-				rv::DebugMessenger::StaticFlush();
-				std::cin.ignore();
-			}
 		}
 	}
 	catch (const rv::ResultException& e)

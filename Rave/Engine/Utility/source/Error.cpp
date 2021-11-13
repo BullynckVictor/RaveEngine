@@ -199,3 +199,135 @@ rv::Result rv::assert_vkr(VkResult result, const char* source, u64 line, const s
 		return try_vkr(result, source, line, info);
 	return succeeded_vkr;
 }
+
+#ifdef RV_PLATFORM_WINDOWS
+#include <comdef.h>
+#undef assert
+
+rv::win32::HrResult::HrResult(HRESULT result, const std::string& info)
+	:
+	ErrorInfo(str(_com_error(result).ErrorMessage(), info.empty() ? "" : "\n" + info), {str("HRESULT: ", std::hex, result)}),
+	result(result)
+{
+}
+
+rv::win32::HrResult::HrResult(const char* source, u64 line, HRESULT result, const std::string& info)
+	:
+	ErrorInfo(source, line, str(_com_error(result).ErrorMessage(), info.empty() ? "" : "\n" + info), { str("HRESULT: ", std::hex, result) }),
+	result(result)
+{
+}
+
+rv::Result rv::win32::try_hr(HRESULT result)
+{
+	if (FAILED(result))
+		return Result(failed_vkr, new HrResult(result));
+	return Result(succeeded_vkr, keep_info_on_success ? new HrResult(result) : nullptr);
+}
+
+rv::Result rv::win32::try_hr(HRESULT result, const char* source, u64 line)
+{
+	if (FAILED(result))
+		return Result(failed_vkr, new HrResult(source, line, result));
+	return Result(succeeded_vkr, keep_info_on_success ? new HrResult(source, line, result) : nullptr);
+}
+
+rv::Result rv::win32::try_hr(HRESULT result, const std::string& info)
+{
+	if (FAILED(result))
+		return Result(failed_vkr, new HrResult(result, info));
+	return Result(succeeded_vkr, keep_info_on_success ? new HrResult(result, info) : nullptr);
+}
+
+rv::Result rv::win32::try_hr(HRESULT result, const char* source, u64 line, const std::string& info)
+{
+	if (FAILED(result))
+		return Result(failed_vkr, new HrResult(source, line, result, info));
+	return Result(succeeded_vkr, keep_info_on_success ? new HrResult(source, line, result, info) : nullptr);
+}
+
+rv::Result rv::win32::assert_hr(HRESULT result)
+{
+	if constexpr (cti.build.debug)
+		return try_hr(result);
+	return succeeded_vkr;
+}
+
+rv::Result rv::win32::assert_hr(HRESULT result, const char* source, u64 line)
+{
+	if constexpr (cti.build.debug)
+		return try_hr(result, source, line);
+	return succeeded_vkr;
+}
+
+rv::Result rv::win32::assert_hr(HRESULT result, const std::string& info)
+{
+	if constexpr (cti.build.debug)
+		return try_hr(result, info);
+	return succeeded_vkr;
+}
+
+rv::Result rv::win32::assert_hr(HRESULT result, const char* source, u64 line, const std::string& info)
+{
+	if constexpr (cti.build.debug)
+		return try_hr(result, source, line, info);
+	return succeeded_vkr;
+}
+
+rv::Result rv::win32::check(bool condition)
+{
+	if (condition)
+		return succeeded_hr;
+	return try_hr((HRESULT)GetLastError());
+}
+
+rv::Result rv::win32::check(bool condition, const char* source, u64 line)
+{
+	if (condition)
+		return succeeded_hr;
+	return try_hr((HRESULT)GetLastError(), source, line);
+}
+
+rv::Result rv::win32::check(bool condition, const std::string& info)
+{
+	if (condition)
+		return succeeded_hr;
+	return try_hr((HRESULT)GetLastError(), info);
+}
+
+rv::Result rv::win32::check(bool condition, const char* source, u64 line, const std::string& info)
+{
+	if (condition)
+		return succeeded_hr;
+	return try_hr((HRESULT)GetLastError(), source, line, info);
+}
+
+rv::Result rv::win32::assert(bool condition)
+{
+	if constexpr (cti.build.debug)
+		return check(condition);
+	return succeeded_hr;
+}
+
+rv::Result rv::win32::assert(bool condition, const char* source, u64 line)
+{
+	if constexpr (cti.build.debug)
+		return check(condition, source, line);
+	return succeeded_hr;
+}
+
+rv::Result rv::win32::assert(bool condition, const std::string& info)
+{
+	if constexpr (cti.build.debug)
+		return check(condition, info);
+	return succeeded_hr;
+}
+
+rv::Result rv::win32::assert(bool condition, const char* source, u64 line, const std::string& info)
+{
+	if constexpr (cti.build.debug)
+		return check(condition, source, line, info);
+	return succeeded_hr;
+}
+
+#endif
