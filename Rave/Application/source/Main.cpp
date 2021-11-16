@@ -7,13 +7,14 @@ rv::Result rave_main()
 
 	{
 		rv::Engine engine;
-		rv::Window window;
+		rv::WindowRenderer renderer;
 
-		rv_rif(rv::Engine::Create(engine, "Test Application"));
-		rv_rif(rv::Window::Create(window, "Test Window", 480, 320));
+		rv_rif(rv::Engine::Create(engine));
+		rv_rif(engine.CreateWindowRenderer(renderer, "Hello World!", 480, 320));
 
-		rv_rif(window.SetTitle(rv::str("size: (", window.Size().width, ", ", window.Size().height, ")")));		
-		while (window.HandleMessages())
+		renderer.window.SetTitle(rv::str("size: (", renderer.window.Size().width, ", ", renderer.window.Size().height, ")"));
+
+		while (renderer.window.HandleMessages())
 		{
 		}
 	}

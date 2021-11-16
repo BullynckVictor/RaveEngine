@@ -19,7 +19,7 @@ rv::Result rv::win32::WindowClass::Create(WindowClass& window, const std::string
 	window.classex.lpszClassName = window.name.c_str();
 	window.classex.lpfnWndProc = procedure;
 
-	rif_win32_assert(RegisterClassEx(&window.classex));
+	rif_win32_check(RegisterClassEx(&window.classex));
 
 	return result;
 }
@@ -56,8 +56,6 @@ rv::Result rv::win32::Window::Create(Window& window, const WindowDescriptor& des
 	rect.bottom = descriptor.size.height * window.dpi / 96;
 	rif_win32_check(AdjustWindowRect(&rect, style, false));
 
-	rv_log(str(rect.bottom - rect.top));
-
 	window.descriptor = descriptor;
 	window.hwnd = CreateWindowEx(
 		styleEx,
@@ -79,19 +77,22 @@ rv::Result rv::win32::Window::Create(Window& window, const WindowDescriptor& des
 
 	window.dpi = GetDpiForWindow(window.hwnd);
 
-	rif_win32_check(SetWindowLongPtr(window.hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(&window)));
-	rif_win32_check(SetWindowLongPtr(window.hwnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(StaticWindowProc)));
+	SetWindowLongPtr(window.hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(&window));
+	SetWindowLongPtr(window.hwnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(StaticWindowProc));
 
-	rif_win32_check(ShowWindow(window.hwnd, SW_NORMAL));
+	ShowWindow(window.hwnd, SW_NORMAL);
 
 	rv_log(str("Created Window \"", descriptor.title, "\""));
 
 	return result;
 }
 
-HWND rv::win32::Window::Expose() const
+rv::win32::ExposedWindow rv::win32::Window::Expose() const
 {
-	return hwnd;
+	ExposedWindow window;
+	window.hwnd = hwnd;
+	window.instance = wclass.instance;
+	return window;
 }
 
 const rv::WindowDescriptor& rv::win32::Window::Descriptor() const
@@ -116,12 +117,12 @@ const rv::Point& rv::win32::Window::Position() const
 
 rv::Result rv::win32::Window::SetSize(const Extent2D& size)
 {
-	return rv_win32_assert(SetWindowPos(hwnd, nullptr, position.x, position.y, size.width, size.height, SWP_ASYNCWINDOWPOS | SWP_NOMOVE));
+	return rv_win32_check(SetWindowPos(hwnd, nullptr, position.x, position.y, size.width, size.height, SWP_ASYNCWINDOWPOS | SWP_NOMOVE));
 }
 
 rv::Result rv::win32::Window::SetPosition(const Point& position)
 {
-	return rv_win32_assert(SetWindowPos(hwnd, nullptr, position.x, position.y, descriptor.size.width, descriptor.size.height, SWP_ASYNCWINDOWPOS | SWP_NOSIZE));
+	return rv_win32_check(SetWindowPos(hwnd, nullptr, position.x, position.y, descriptor.size.width, descriptor.size.height, SWP_ASYNCWINDOWPOS | SWP_NOSIZE));
 }
 
 const std::string& rv::win32::Window::Title() const
@@ -132,7 +133,7 @@ const std::string& rv::win32::Window::Title() const
 rv::Result rv::win32::Window::SetTitle(const std::string& title)
 {
 	descriptor.title = title;
-	return rv_win32_assert(SetWindowText(hwnd, title.c_str()));
+	return rv_win32_check(SetWindowText(hwnd, title.c_str()));
 }
 
 bool rv::win32::Window::Minimized() const

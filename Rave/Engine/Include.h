@@ -8,7 +8,7 @@
 #include "Engine/Core/Window.h"
 
 #include "Engine/Graphics/Vulkan.h"
-#include "Engine/Graphics/GraphicsEngine.h"
+#include "Engine/Graphics/Graphics.h"
 
 #include "Engine/Utility/Hash.h"
 #include "Engine/Utility/Identifier.h"

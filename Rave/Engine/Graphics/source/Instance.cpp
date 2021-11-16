@@ -40,6 +40,12 @@ rv::ValidationLayers::ValidationLayers()
 {
 }
 
+rv::ValidationLayers::ValidationLayers(Flags<ValidationLayerType> flags)
+{
+	if (flags.contain(RV_VALIDATION_KHRONOS))
+		layers.push_back("VK_LAYER_KHRONOS_validation");
+}
+
 rv::ValidationLayers::ValidationLayers(const std::vector<const char*>& layers)
 	:
 	layers(layers)
@@ -79,6 +85,69 @@ rv::ResultValue<bool> rv::ValidationLayers::supported() const
 	return true;
 }
 
+void rv::ValidationLayers::AddLayer(ValidationLayerType type)
+{
+	switch (type)
+	{
+		case RV_VALIDATION_KHRONOS:
+			layers.push_back("VK_LAYER_KHRONOS_validation");
+			break;
+	}
+}
+
+rv::Extensions::Extensions()
+	:
+	extensions({ VK_KHR_SURFACE_EXTENSION_NAME })
+{
+	if constexpr (cti.platform.windows)
+		extensions.push_back(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
+	if constexpr (cti.build.debug)
+		extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+}
+
+rv::Extensions::Extensions(Flags<ExtensionType> flags)
+{
+	if (flags.contain(RV_EXTENSION_SURFACE))
+		extensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
+	if (flags.contain(RV_EXTENSION_SURFACE_WIN32))
+		extensions.push_back(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
+	if (flags.contain(RV_EXTENSION_DEBUG))
+		extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+	if (flags.contain(RV_EXTENSION_SWAPCHAIN))
+		extensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+}
+
+rv::Extensions::Extensions(const std::vector<const char*>& extensions)
+	:
+	extensions(extensions)
+{
+}
+
+rv::Extensions::Extensions(std::vector<const char*>&& extensions)
+	:
+	extensions(std::move(extensions))
+{
+}
+
+void rv::Extensions::AddExtension(ExtensionType extension)
+{
+	switch (extension)
+	{
+		case RV_EXTENSION_SURFACE:
+			extensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
+			break;
+		case RV_EXTENSION_SURFACE_WIN32:
+			extensions.push_back(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
+			break;
+		case RV_EXTENSION_DEBUG:
+			extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+			break;
+		case RV_EXTENSION_SWAPCHAIN:
+			extensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+			break;
+	}
+}
+
 rv::Instance::Instance(Instance&& rhs) noexcept
 	:
 	instance(move(rhs.instance))
@@ -96,7 +165,7 @@ rv::Instance& rv::Instance::operator=(Instance&& rhs) noexcept
 	return *this;
 }
 
-rv::Result rv::Instance::Create(Instance& instance, const ApplicationInfo& app, const ValidationLayers& layers)
+rv::Result rv::Instance::Create(Instance& instance, const ApplicationInfo& app, const ValidationLayers& layers, const Extensions& extensions)
 {
 	rv_result;
 
@@ -110,16 +179,8 @@ rv::Result rv::Instance::Create(Instance& instance, const ApplicationInfo& app, 
 	createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	createInfo.pApplicationInfo = &app.info;
 
-	std::vector<const char*> extensions;
-	extensions.reserve(3);
-	extensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
-	if constexpr (cti.platform.windows)
-		extensions.push_back(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
-	if constexpr (cti.build.debug)
-		extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-
-	createInfo.enabledExtensionCount = (u32)extensions.size();
-	createInfo.ppEnabledExtensionNames = extensions.data();
+	createInfo.enabledExtensionCount = (u32)extensions.extensions.size();
+	createInfo.ppEnabledExtensionNames = extensions.extensions.data();
 	createInfo.enabledLayerCount = (u32)layers.layers.size();
 	createInfo.ppEnabledLayerNames = layers.layers.data();
 

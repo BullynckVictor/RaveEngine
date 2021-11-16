@@ -44,12 +44,12 @@ rv::Severity rv::Result::severity() const
 
 bool rv::Result::succeeded(Flags<Severity> severity) const
 {
-	return severity.contains(m_code.severity());
+	return severity.contain(m_code.severity());
 }
 
 bool rv::Result::failed(Flags<Severity> severity) const
 {
-	return severity.contains(m_code.severity());
+	return severity.contain(m_code.severity());
 }
 
 bool rv::Result::fatal() const

@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine/Graphics/Instance.h"
+#include "Engine/Graphics/Surface.h"
 #include "Engine/Utility/Optional.h"
 #include <array>
 #include <map>
@@ -17,6 +18,7 @@ namespace rv
 
 		VkPhysicalDeviceFeatures features = {};
 		std::list<QueueFamilyGetter> requiredFamilies;
+		Extensions extensions = std::vector<const char*>{};
 	};
 
 	struct DeviceRater
@@ -26,8 +28,8 @@ namespace rv
 		void AddTypeMultiplier(VkPhysicalDeviceType type, int multiplier = 1);
 		int GetTypeMultiplier(VkPhysicalDeviceType type) const;
 
-		void AddLimitMultiplier(u32 offset, int multiplier = 1);
-		int GetLimitMultiplier(u32 offset) const;
+		void AddLimitMultiplier(u32 offset, float multiplier = 1);
+		float GetLimitMultiplier(u32 offset) const;
 
 		void AddFeatureMultiplier(u32 offset, int multiplier = 1);
 		void AddFeatureMultiplierIndex(u32 index, int multiplier = 1);
@@ -40,24 +42,35 @@ namespace rv
 		int Rate(const VkPhysicalDeviceLimits& limits) const;
 
 		std::array<int, VK_PHYSICAL_DEVICE_TYPE_CPU + 1> typeMultipliers = {};
-		std::map<int, u32> limitMultiplier;
+		std::map<int, float> limitMultiplier;
 		std::array<int, sizeof(VkPhysicalDeviceFeatures) / sizeof(VkBool32)> featureMultipliers = {};
 		std::list<std::pair<QueueFamilyGetter, int>> queueFamilyMultipliers;
 	};
 
-	PhysicalDeviceRequirements DefaultDeviceRequirements();
+	PhysicalDeviceRequirements DefaultDeviceRequirements(const std::vector<std::reference_wrapper<const Surface>>& surfaces = {});
 	DeviceRater DefaultDeviceRater();
 
 	struct Queue
 	{
 		Queue() = default;
+		Queue(const Queue&) = default;
+		Queue(Queue&& rhs) noexcept;
+		
+		Queue& operator= (const Queue&) = default;
+		Queue& operator= (Queue&& rhs) noexcept;
+
+		void Release();
+		Result Wait() const;
 
 		VkQueue queue = VK_NULL_HANDLE;
+		u32 family = std::numeric_limits<u32>::max();
+		u32 index = std::numeric_limits<u32>::max();
 	};
 
 	enum QueueGetterType
 	{
-		RV_QUEUE_GETTER_TYPE_FLAGS
+		RV_QUEUE_GETTER_TYPE_FLAGS,
+		RV_QUEUE_GETTER_TYPE_PRESENT
 	};
 
 	struct QueueFamilyGetter
@@ -70,8 +83,13 @@ namespace rv
 				:
 				flags(flags)
 			{}
+			constexpr Data(VkSurfaceKHR surface)
+				:
+				surface(surface)
+			{}
 
 			VkQueueFlags flags;
+			VkSurfaceKHR surface;
 		} data{};
 
 		constexpr bool operator== (const QueueFamilyGetter& rhs) const
@@ -81,6 +99,7 @@ namespace rv
 			switch (type)
 			{
 				case RV_QUEUE_GETTER_TYPE_FLAGS: return data.flags == rhs.data.flags;
+				case RV_QUEUE_GETTER_TYPE_PRESENT: return data.surface == rhs.data.surface;
 			}
 			return false;
 		}
@@ -93,10 +112,11 @@ namespace rv
 		{
 		}
 
-		bool IsFamily(const VkQueueFamilyProperties& family) const;
+		ResultValue<bool> IsFamily(VkPhysicalDevice device, const VkQueueFamilyProperties& family, u32 index) const;
 	};
 
 	static constexpr QueueFamilyGetter graphicsFamilyGetter = QueueFamilyGetter(RV_QUEUE_GETTER_TYPE_FLAGS, VK_QUEUE_GRAPHICS_BIT);
+	static constexpr QueueFamilyGetter computeFamilyGetter = QueueFamilyGetter(RV_QUEUE_GETTER_TYPE_FLAGS, VK_QUEUE_COMPUTE_BIT);
 
 	struct QueueFamilies
 	{
@@ -105,6 +125,7 @@ namespace rv
 		OIndex32 GetFamily(QueueFamilyGetter getter) const;
 
 		std::vector<VkQueueFamilyProperties> families;
+		VkPhysicalDevice device = VK_NULL_HANDLE;
 	};
 
 	struct PhysicalDevice
@@ -124,6 +145,8 @@ namespace rv
 		bool Suitable(const PhysicalDeviceRequirements& requirements) const;
 		void FillData();
 		int Rate(const PhysicalDeviceRequirements& requirements, const DeviceRater& rater) const;
+
+		ResultValue<bool> SupportsExtensions(const Extensions& extensions) const;
 
 		QueueFamilies GetQueueFamilies() const;
 
@@ -156,5 +179,13 @@ namespace rv
 
 		VkDevice device = VK_NULL_HANDLE;
 		PhysicalDevice physical;
+		Queue graphicsQueue;
+		Queue computeQueue;
 	};
+
+	template<typename T>
+	static void release(T*& object, const Device& device)
+	{
+		release(object, device.device);
+	}
 }

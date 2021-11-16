@@ -56,7 +56,7 @@ rv::Logger::Logger(Flags<Severity> allowedSeverity)
 
 void rv::Logger::Log(const Message& message)
 {
-	if (allowedSeverity.contains(message.severity))
+	if (allowedSeverity.contain(message.severity))
 	{
 		messages.push_back(message);
 		OnLog(message);

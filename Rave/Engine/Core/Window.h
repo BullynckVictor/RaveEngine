@@ -31,6 +31,13 @@ namespace rv
 			std::string name;
 		};
 
+		struct ExposedWindow
+		{
+			ExposedWindow() = default;
+			HWND hwnd = nullptr;
+			HINSTANCE instance = nullptr;
+		};
+
 		class Window
 		{
 		public:
@@ -39,7 +46,7 @@ namespace rv
 			static Result Create(Window& window, const std::string& title, uint width, uint height, bool resize = false);
 			static Result Create(Window& window, const WindowDescriptor& descriptor);
 
-			HWND Expose() const;
+			ExposedWindow Expose() const;
 
 			const WindowDescriptor& Descriptor() const;
 

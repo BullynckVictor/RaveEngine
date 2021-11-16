@@ -278,28 +278,28 @@ rv::Result rv::win32::check(bool condition)
 {
 	if (condition)
 		return succeeded_hr;
-	return try_hr((HRESULT)GetLastError());
+	return Result(failed_hr, new HrResult((HRESULT)GetLastError()));
 }
 
 rv::Result rv::win32::check(bool condition, const char* source, u64 line)
 {
 	if (condition)
 		return succeeded_hr;
-	return try_hr((HRESULT)GetLastError(), source, line);
+	return Result(failed_hr, new HrResult(source, line, (HRESULT)GetLastError()));
 }
 
 rv::Result rv::win32::check(bool condition, const std::string& info)
 {
 	if (condition)
 		return succeeded_hr;
-	return try_hr((HRESULT)GetLastError(), info);
+	return Result(failed_hr, new HrResult((HRESULT)GetLastError(), info));
 }
 
 rv::Result rv::win32::check(bool condition, const char* source, u64 line, const std::string& info)
 {
 	if (condition)
 		return succeeded_hr;
-	return try_hr((HRESULT)GetLastError(), source, line, info);
+	return Result(failed_hr, new HrResult(source, line, (HRESULT)GetLastError(), info));
 }
 
 rv::Result rv::win32::assert(bool condition)

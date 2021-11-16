@@ -82,9 +82,9 @@ rv::Result rv::DebugMessenger::Create(DebugMessenger& messenger, const Instance&
 rv::Result rv::DebugMessenger::Create(DebugMessenger& messenger, const Instance& instance, Flags<Severity> severity, bool verbose)
 {
 	VkDebugUtilsMessageSeverityFlagsEXT flags = verbose ? VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT : 0;
-	flags |= severity.contains(RV_SEVERITY_INFO) ? VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT : 0;
-	flags |= severity.contains(RV_SEVERITY_WARNING) ? VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT : 0;
-	flags |= severity.contains(RV_SEVERITY_ERROR) ? VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT : 0;
+	flags |= severity.contain(RV_SEVERITY_INFO) ? VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT : 0;
+	flags |= severity.contain(RV_SEVERITY_WARNING) ? VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT : 0;
+	flags |= severity.contain(RV_SEVERITY_ERROR) ? VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT : 0;
 	return Create(messenger, instance, flags);
 }
 
