@@ -197,6 +197,7 @@ LRESULT rv::win32::Window::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 		case WM_DESTROY:
 		{
 			this->hwnd = nullptr;
+			EmplaceEvent<WindowClosedEvent>();
 		}
 		break;
 
@@ -205,12 +206,14 @@ LRESULT rv::win32::Window::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 			if (wParam == SIZE_MINIMIZED)
 			{
 				minimized = true;
+				EmplaceEvent<WindowResizedEvent>(Extent2D(), true);
 			}
 			else
 			{
 				minimized = false;
 				descriptor.size.width = (uint)LOWORD(lParam);
 				descriptor.size.height = (uint)HIWORD(lParam);
+				EmplaceEvent<WindowResizedEvent>(descriptor.size);
 			}
 		}
 		break;
@@ -218,12 +221,14 @@ LRESULT rv::win32::Window::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 		{
 			position.x = (int)LOWORD(lParam);
 			position.y = (int)HIWORD(lParam);
+			EmplaceEvent<WindowMovedEvent>(position);
 		}
 		break;
 
 		case WM_DPICHANGED:
 		{
 			dpi = HIWORD(wParam);
+			EmplaceEvent<WindowDpiChangedEvent>(dpi);
 			RECT* rect = reinterpret_cast<RECT*>(lParam);
 			if (rect)
 				SetWindowPos(hwnd, nullptr, rect->left, rect->top, rect->right - rect->left, rect->bottom - rect->top, 0);

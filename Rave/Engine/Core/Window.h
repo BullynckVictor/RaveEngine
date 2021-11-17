@@ -2,6 +2,7 @@
 #include "Engine/Core/SystemInclude.h"
 #include "Engine/Utility/Result.h"
 #include "Engine/Utility/Vector.h"
+#include "Engine/Utility/Event.h"
 
 namespace rv
 {
@@ -12,6 +13,52 @@ namespace rv
 		std::string title;
 		Extent2D size;
 		bool resize = false;
+	};
+
+	static constexpr Identifier window_closed_event			= Identifier("Window Closed Event");
+	static constexpr Identifier window_resized_event		= Identifier("Window Resize Event");
+	static constexpr Identifier window_moved_event			= Identifier("Window Moved Event");
+	static constexpr Identifier window_dpi_changed_event	= Identifier("Window DPI Changed Event");
+
+	struct WindowClosedEvent : public EventData
+	{
+		static constexpr Identifier type_id = window_closed_event;
+		WindowClosedEvent() : EventData(type_id) {}
+	};
+
+	struct WindowResizedEvent : public EventData
+	{
+		static constexpr Identifier type_id = window_resized_event;
+		WindowResizedEvent(Extent2D size = {}, bool minimized = false, bool maximized = false) 
+			: 
+			EventData(type_id), size(size), minimized(minimized), maximized(maximized)
+		{}
+
+		Extent2D size;
+		bool minimized;
+		bool maximized;
+	};
+
+	struct WindowMovedEvent : public EventData
+	{
+		static constexpr Identifier type_id = window_moved_event;
+		WindowMovedEvent(Point position = {})
+			:
+			EventData(type_id), position(position)
+		{}
+
+		Point position;
+	};
+
+	struct WindowDpiChangedEvent : public EventData
+	{
+		static constexpr Identifier type_id = window_dpi_changed_event;
+		WindowDpiChangedEvent(uint dpi = 96)
+			:
+			EventData(type_id), dpi(dpi)
+		{}
+
+		uint dpi;
 	};
 }
 
@@ -38,7 +85,7 @@ namespace rv
 			HINSTANCE instance = nullptr;
 		};
 
-		class Window
+		class Window : public EventQueue
 		{
 		public:
 			Window() = default;
@@ -64,7 +111,6 @@ namespace rv
 			bool Open() const;
 			Result Close();
 
-
 			bool HandleMessages();
 
 		private:
@@ -76,7 +122,7 @@ namespace rv
 			HWND hwnd = nullptr;
 			WindowDescriptor descriptor;
 			bool minimized = true;
-			uint dpi;
+			uint dpi = 96;
 			Point position;
 			
 			static WindowClass wclass;

@@ -58,6 +58,7 @@ void rv::Logger::Log(const Message& message)
 {
 	if (allowedSeverity.contain(message.severity))
 	{
+		std::lock_guard guard(mutex);
 		messages.push_back(message);
 		OnLog(message);
 	}

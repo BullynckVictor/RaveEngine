@@ -6,6 +6,7 @@
 #include <deque>
 #include <chrono>
 #include <ios>
+#include <mutex>
 
 namespace rv
 {
@@ -39,6 +40,7 @@ namespace rv
 
 	protected:
 		std::deque<Message> messages;
+		std::mutex mutex;
 	};
 }
 
