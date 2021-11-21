@@ -87,6 +87,7 @@ namespace rv
 	{
 	public:
 		EventListener() = default;
+		EventListener(EventQueue& queue);
 		~EventListener();
 
 		bool Active() const;
@@ -94,6 +95,7 @@ namespace rv
 		void StopListening();
 
 		Event GetEvent();
+		bool Empty() const;
 
 	private:
 		std::deque<EventQueue::ListenerQueue>::iterator events;

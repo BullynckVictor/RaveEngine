@@ -51,6 +51,11 @@ rv::Event::Event(std::unique_ptr<EventData>&& data)
 	data(std::move(data)) 
 {}
 
+rv::EventListener::EventListener(EventQueue& queue)
+{
+	Listen(queue);
+}
+
 rv::EventListener::~EventListener()
 {
 	StopListening();
@@ -94,4 +99,11 @@ rv::Event rv::EventListener::GetEvent()
 	std::unique_ptr<EventData> event = std::move(events->events.back());
 	events->events.pop_back();
 	return event;
+}
+
+bool rv::EventListener::Empty() const
+{
+	if (Active())
+		return events->events.empty();
+	return false;
 }

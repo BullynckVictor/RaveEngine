@@ -97,6 +97,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Core\source\Engine.cpp" />
+    <ClCompile Include="Core\source\InputEvents.cpp" />
+    <ClCompile Include="Core\source\InputManager.cpp" />
     <ClCompile Include="Core\source\Logger.cpp" />
     <ClCompile Include="Core\source\Main.cpp" />
     <ClCompile Include="Core\source\Window.cpp" />
@@ -118,6 +120,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\CompileTimeInfo.h" />
+    <ClInclude Include="Core\InputEvents.h" />
+    <ClInclude Include="Core\InputManager.h" />
     <ClInclude Include="Core\Logger.h" />
     <ClInclude Include="Core\Engine.h" />
     <ClInclude Include="Core\Main.h" />

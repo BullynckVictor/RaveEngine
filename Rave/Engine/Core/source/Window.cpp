@@ -193,13 +193,13 @@ LRESULT rv::win32::Window::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 		{
 			Close();
 		}
-		break;
+		return 0;
 		case WM_DESTROY:
 		{
 			this->hwnd = nullptr;
 			EmplaceEvent<WindowClosedEvent>();
 		}
-		break;
+		return 0;
 
 		case WM_SIZE:
 		{
@@ -216,14 +216,14 @@ LRESULT rv::win32::Window::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 				EmplaceEvent<WindowResizedEvent>(descriptor.size);
 			}
 		}
-		break;
+		return 0;
 		case WM_MOVE:
 		{
 			position.x = (int)LOWORD(lParam);
 			position.y = (int)HIWORD(lParam);
 			EmplaceEvent<WindowMovedEvent>(position);
 		}
-		break;
+		return 0;
 
 		case WM_DPICHANGED:
 		{
@@ -233,9 +233,102 @@ LRESULT rv::win32::Window::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 			if (rect)
 				SetWindowPos(hwnd, nullptr, rect->left, rect->top, rect->right - rect->left, rect->bottom - rect->top, 0);
 		}
+		return 0;
+
+		//keyboard events
+		case WM_KEYDOWN:
+		{
+			BOOL repeatFlag = (HIWORD(lParam) & KF_REPEAT) == KF_REPEAT;
+			EmplaceEvent<KeyPressedEvent>((Key)wParam, (bool)repeatFlag);
+		}
+		return 0;
+		case WM_KEYUP:
+		{
+			BOOL repeatFlag = (HIWORD(lParam) & KF_REPEAT) == KF_REPEAT;
+			EmplaceEvent<KeyReleasedEvent>((Key)wParam, (bool)repeatFlag);
+		}
+		return 0;
+		case WM_CHAR:
+		{
+			BOOL repeatFlag = (HIWORD(lParam) & KF_REPEAT) == KF_REPEAT;
+			EmplaceEvent<CharEvent>((char)wParam, (bool)repeatFlag);
+		}
+		return 0;
+
+		//mouse events
+		case WM_MOUSEMOVE:
+		{
+			POINTS points = MAKEPOINTS(lParam);
+			PostEvent<MouseMovedEvent>({ { points.x, points.y }, ToMouseButtons(wParam) });
+		}
+		return 0;
+		case WM_LBUTTONDOWN:
+		{
+			POINTS points = MAKEPOINTS(lParam);
+			PostEvent<MouseButtonPressedEvent>({ RV_MOUSE_LEFT, { points.x, points.y }, ToMouseButtons(wParam) });
+		}
+		return 0;
+		case WM_MBUTTONDOWN:
+		{
+			POINTS points = MAKEPOINTS(lParam);
+			PostEvent<MouseButtonPressedEvent>({ RV_MOUSE_MIDDLE, { points.x, points.y }, ToMouseButtons(wParam) });
+		}
+		return 0;
+		case WM_RBUTTONDOWN:
+		{
+			POINTS points = MAKEPOINTS(lParam);
+			PostEvent<MouseButtonPressedEvent>({ RV_MOUSE_RIGHT, { points.x, points.y }, ToMouseButtons(wParam) });
+		}
+		return 0;
+		case WM_XBUTTONDOWN:
+		{
+			POINTS points = MAKEPOINTS(lParam);
+			PostEvent<MouseButtonPressedEvent>({ GET_XBUTTON_WPARAM(wParam) ? RV_MOUSE_X1 : RV_MOUSE_X2, { points.x, points.y }, ToMouseButtons(wParam) });
+		}
+		return 0;
+		case WM_LBUTTONUP:
+		{
+			POINTS points = MAKEPOINTS(lParam);
+			PostEvent<MouseButtonReleasedEvent>({ RV_MOUSE_LEFT, { points.x, points.y }, ToMouseButtons(wParam) });
+		}
+		return 0;
+		case WM_MBUTTONUP:
+		{
+			POINTS points = MAKEPOINTS(lParam);
+			PostEvent<MouseButtonReleasedEvent>({ RV_MOUSE_MIDDLE, { points.x, points.y }, ToMouseButtons(wParam) });
+		}
+		return 0;
+		case WM_RBUTTONUP:
+		{
+			POINTS points = MAKEPOINTS(lParam);
+			PostEvent<MouseButtonReleasedEvent>({ RV_MOUSE_RIGHT, { points.x, points.y }, ToMouseButtons(wParam) });
+		}
+		return 0;
+		case WM_XBUTTONUP:
+		{
+			POINTS points = MAKEPOINTS(lParam);
+			PostEvent<MouseButtonReleasedEvent>({ GET_XBUTTON_WPARAM(wParam) ? RV_MOUSE_X1 : RV_MOUSE_X2, { points.x, points.y }, ToMouseButtons(wParam) });
+		}
+		return 0;
 	}
 
 	return DefWindowProc(hwnd, msg, wParam, lParam);
+}
+
+constexpr rv::Flags<rv::MouseButton> rv::win32::Window::ToMouseButtons(WPARAM wParam)
+{
+	Flags<MouseButton> additionalButtons;
+	switch (GET_KEYSTATE_WPARAM(wParam))
+	{
+		case MK_CONTROL:	additionalButtons |= RV_MOUSE_CONTROL; break;
+		case MK_LBUTTON:	additionalButtons |= RV_MOUSE_LEFT; break;
+		case MK_MBUTTON:	additionalButtons |= RV_MOUSE_MIDDLE; break;
+		case MK_RBUTTON:	additionalButtons |= RV_MOUSE_RIGHT; break;
+		case MK_SHIFT:		additionalButtons |= RV_MOUSE_SHIFT; break;
+		case MK_XBUTTON1:	additionalButtons |= RV_MOUSE_X1; break;
+		case MK_XBUTTON2:	additionalButtons |= RV_MOUSE_X2; break;
+	}
+	return additionalButtons;
 }
 
 #endif

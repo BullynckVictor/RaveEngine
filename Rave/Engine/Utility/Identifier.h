@@ -29,6 +29,8 @@ namespace rv
 		constexpr H hash() const { return m_hash; }
 		constexpr const char* name() const { return m_name; }
 
+		constexpr operator H() const { return hash(); }
+
 	private:
 		H m_hash;
 		const char* m_name;

@@ -12,6 +12,10 @@ namespace rv
 	static constexpr bool keep_info_on_success = false;
 #	endif
 
+	static constexpr ResultCode runtime_error = ResultCode("Runtime Error", RV_SEVERITY_ERROR);
+	Result make_runtime_error(const std::string& error);
+	Result make_runtime_error(const std::string& error, const char* source, u64 line);
+
 	struct Condition : public ErrorInfo
 	{
 		Condition() = default;
@@ -103,6 +107,9 @@ namespace rv
 #define rv_result				rv::Result result = rv::success;
 #define rv_rif(res)				if (((result) = (res)).failed()) return result
 
+#define rv_runtime_error(msg)					rv::make_runtime_error(msg)
+#define rif_runtime_error(msg)					rv_rif(rv_runtime_error(msg))
+#define rv_throw(msg)							rv_runtime_error(msg).throw_exception()
 
 #define rv_try_vkr(vkr)							rv::try_vkr(vkr, RV_FILE_LINE)
 #define rv_try_vkr_info(vkr,msg)				rv::try_vkr(vkr, RV_FILE_LINE, msg)

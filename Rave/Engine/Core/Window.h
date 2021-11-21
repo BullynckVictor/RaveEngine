@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine/Core/SystemInclude.h"
+#include "Engine/Core/InputEvents.h"
 #include "Engine/Utility/Result.h"
 #include "Engine/Utility/Vector.h"
 #include "Engine/Utility/Event.h"
@@ -117,6 +118,8 @@ namespace rv
 			static LRESULT CALLBACK SetupProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 			static LRESULT CALLBACK StaticWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 			LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+			static constexpr Flags<MouseButton> ToMouseButtons(WPARAM wParam);
 
 		private:
 			HWND hwnd = nullptr;

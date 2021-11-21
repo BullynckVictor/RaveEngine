@@ -6,6 +6,7 @@
 #include "Engine/Core/Engine.h"
 #include "Engine/Core/Logger.h"
 #include "Engine/Core/Window.h"
+#include "Engine/Core/InputManager.h"
 
 #include "Engine/Graphics/Vulkan.h"
 #include "Engine/Graphics/Graphics.h"

@@ -22,6 +22,16 @@ rv::Condition::Condition(const char* source, u64 line, bool condition, const std
 {
 }
 
+rv::Result rv::make_runtime_error(const std::string& error)
+{
+	return Result(runtime_error, new ErrorInfo(error));
+}
+
+rv::Result rv::make_runtime_error(const std::string& error, const char* source, u64 line)
+{
+	return Result(runtime_error, new ErrorInfo(source, line, error));
+}
+
 rv::Result rv::assert(bool condition)
 {
 	if constexpr (cti.build.debug)
