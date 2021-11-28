@@ -108,6 +108,7 @@
     <ClCompile Include="Graphics\source\ImageView.cpp" />
     <ClCompile Include="Graphics\source\Instance.cpp" />
     <ClCompile Include="Graphics\source\Renderer.cpp" />
+    <ClCompile Include="Graphics\source\Shader.cpp" />
     <ClCompile Include="Graphics\source\Surface.cpp" />
     <ClCompile Include="Graphics\source\SwapChain.cpp" />
     <ClCompile Include="Graphics\source\WindowRenderer.cpp" />
@@ -133,11 +134,14 @@
     <ClInclude Include="Graphics\ImageView.h" />
     <ClInclude Include="Graphics\Instance.h" />
     <ClInclude Include="Graphics\Renderer.h" />
+    <ClInclude Include="Graphics\Shader.h" />
     <ClInclude Include="Graphics\SwapChain.h" />
     <ClInclude Include="Graphics\Vulkan.h" />
     <ClInclude Include="Graphics\WindowRenderer.h" />
     <ClInclude Include="Include.h" />
     <ClInclude Include="Utility\Event.h" />
+    <ClInclude Include="Utility\File.h" />
+    <ClInclude Include="Utility\HeapBuffer.h" />
     <ClInclude Include="Utility\Optional.h" />
     <ClInclude Include="Utility\PerformanceLogger.h" />
     <ClInclude Include="Utility\Random.h" />
@@ -154,6 +158,9 @@
     <ClInclude Include="Utility\Types.h" />
     <ClInclude Include="Utility\Vector.h" />
     <ClInclude Include="Utility\VkResult.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Graphics\Shaders\source\Triangle.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

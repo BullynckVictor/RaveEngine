@@ -41,4 +41,9 @@ namespace rv
 	{
 		return str_t<char>(args...);
 	}
+
+	static bool strcomp(const char* a, const char* b)
+	{
+		return !strcmp(a, b);
+	}
 }

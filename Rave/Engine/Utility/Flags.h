@@ -32,6 +32,8 @@ namespace rv
 		constexpr Flags& operator&= (const Flags& rhs) { m_data &= rhs.m_data; return *this; }
 		constexpr Flags& operator^= (const Flags& rhs) { m_data ^= rhs.m_data; return *this; }
 
+		constexpr bool empty() const { return m_data == 0; }
+
 		constexpr bool contain(E flag) const { return m_data & ((D)0x1 << flag); }
 		constexpr bool contain(Flags flags) const { return (m_data & flags.m_data) == flags.m_data; }
 		constexpr bool only_contains(E flag) const { return m_data == ((D)0x1 << flag); }

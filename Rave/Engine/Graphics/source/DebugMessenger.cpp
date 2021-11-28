@@ -60,6 +60,10 @@ void rv::DebugMessenger::Release()
 	else
 		release(messenger);
 
+	Result result = Check();
+	if (result.failed())
+		lastMessage = dynamic_cast<const VulkanDebugMessage&>(result.info()).message;
+
 	messages.clear();
 	instance = nullptr;
 }
@@ -220,6 +224,7 @@ rv::Result rv::DebugMessenger::Message::MakeResult() const
 
 rv::VulkanDebugMessage::VulkanDebugMessage(const DebugMessenger::Message& message)
 	:
-	ResultInfo(message.message, { str("ID: ", message.messageIDName) })
+	ResultInfo(message.message, { str("ID: ", message.messageIDName) }),
+	message(message)
 {
 }

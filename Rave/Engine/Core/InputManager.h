@@ -1,8 +1,15 @@
 #pragma once
 #include "Engine/Core/Window.h"
+#include <list>
+#include <map>
 
 namespace rv
 {
+	template<typename K>
+	concept KeyConcept = requires(K key) {
+		(Key)key;
+	};
+
 	class Keyboard
 	{
 	public:
@@ -13,6 +20,33 @@ namespace rv
 		u16  Peek(Key key) const;
 		void Flush();
 		void Flush(Key key);
+
+		template<KeyConcept K, KeyConcept... Keys>
+		bool KeysPressed(K key, Keys... keys) const
+		{
+			if constexpr (sizeof...(Keys) != 0)
+				return KeyPressed(key) && KeysPressed(keys...);
+			else
+				return KeyPressed(key);
+		}
+
+		template<KeyConcept K, KeyConcept... Keys>
+		bool AnyKeyPressed(K key, Keys... keys) const
+		{
+			if constexpr (sizeof...(Keys) != 0)
+				return KeyPressed(key) || AnyKeyPressed(keys...);
+			else
+				return KeyPressed(key);
+		}
+
+		template<KeyConcept K, KeyConcept... Keys>
+		bool AnyFlagged(K key, Keys... keys)
+		{
+			if constexpr (sizeof...(Keys) != 0)
+				return Flagged(key) || AnyFlagged(keys...);
+			else
+				return Flagged(key);
+		}
 
 	private:
 		std::array<bool, 255> keys;

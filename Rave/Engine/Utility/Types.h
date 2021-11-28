@@ -1,5 +1,6 @@
 #pragma once
 #include <cinttypes>
+#include <type_traits>
 
 namespace rv
 {
@@ -31,4 +32,13 @@ namespace rv
 	typedef unsigned long		ulong;
 	typedef unsigned long long	ulonglong;
 	typedef unsigned long long	ull;
+
+	template<typename... T>
+	struct all_same : std::false_type { };
+	template<>
+	struct all_same<> : std::true_type { };
+	template<typename T>
+	struct all_same<T> : std::true_type { };
+	template<typename T, typename... Ts>
+	struct all_same<T, T, Ts...> : all_same<T, Ts...> { };
 }

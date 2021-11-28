@@ -18,6 +18,7 @@ rv::Result rv::Engine::Create(Engine& engine, const GraphicsInfo& info)
 	rv_debug_logger_only(Timer timer);
 
 	rv_rif(Graphics::Create(engine.graphics, info));
+	rv_rif(engine.graphics.AddShaderPath("../Engine/Graphics/Shaders/"));
 
 	rv_log(str("Created Engine in ", timer.Mark().seconds(), "s"));
 	return result;

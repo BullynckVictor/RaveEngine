@@ -1,6 +1,7 @@
 #include "Engine/Core/InputManager.h"
 #include "Engine/Utility/Error.h"
 #include "Engine/Utility/String.h"
+#include <stdarg.h>
 
 rv::InputManager::InputManager(Window& window)
 	:

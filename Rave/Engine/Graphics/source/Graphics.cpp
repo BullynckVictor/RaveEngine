@@ -1,5 +1,8 @@
 #include "Engine/Graphics/Graphics.h"
 #include "Engine/Utility/Error.h"
+#include "Engine/Utility/String.h"
+#include "Engine/Utility/File.h"
+#include "Engine/Core/Logger.h"
 #include <algorithm>
 
 #ifdef RV_DEBUG
@@ -58,4 +61,59 @@ rv::Result rv::Graphics::Create(Graphics& graphics, const GraphicsInfo& info)
 	check_debug_static();
 
 	return result;
+}
+
+rv::Result rv::Graphics::GetShader(Shader*& outshader, const char* name, Flags<ShaderType, u32> type)
+{
+	outshader = nullptr;
+	auto shader = shaders.find(name);
+	if (shader == shaders.end())
+	{
+		std::filesystem::path path(name);
+		path += ".spv";
+		if (!FileExists(path))
+		{
+			bool found = false;
+			for (const auto& d : shaderpaths)
+			{
+				auto p = std::filesystem::absolute(d);
+				if (FileExists(p += path))
+				{
+					found = true;
+					path = p;
+					break;
+				}
+				else if (FileExists((p = std::filesystem::absolute(d)) += std::filesystem::path("/bin/") += path))
+				{
+					found = true;
+					path = p;
+					break;
+				}
+			}
+			if (!found)
+				return rv_runtime_error(str("Shader \"", name, "\" not found"));
+		}
+		Shader& s = shaders[name];
+		Result result = Shader::Create(s, device, path.string().c_str(), type);
+		if (result.succeeded())
+			outshader = &s;
+		return result;
+	}
+	outshader = &shader->second;
+	return success;
+}
+
+rv::Result rv::Graphics::CreateShader(const char* name, Flags<ShaderType, u32> type)
+{
+	Shader* s = nullptr;
+	return GetShader(s, name, type);
+}
+
+rv::Result rv::Graphics::AddShaderPath(const char* path)
+{
+	if (std::filesystem::is_directory(path))
+		shaderpaths.push_back(path);
+	else
+		return failure;
+	return success;
 }

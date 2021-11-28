@@ -26,6 +26,23 @@ namespace rv
 		const char* cond_str;
 	};
 
+	struct FileInfo : public ErrorInfo
+	{
+		FileInfo() = default;
+		FileInfo(const std::string& filename, const std::string& info = {});
+		FileInfo(const char* source, u64 line, const std::string& filename, const std::string& info = {});
+
+		std::string filename;
+	};
+
+	static constexpr ResultCode failed_file = ResultCode("Failed File", RV_SEVERITY_ERROR);
+	static constexpr ResultCode succeeded_file = ResultCode("Succeeded File", RV_SEVERITY_INFO);
+
+	Result try_file(const char* filename);
+	Result try_file(const char* filename, const char* source, u64 line);
+	Result try_file(const char* filename, const std::string& info);
+	Result try_file(const char* filename, const char* source, u64 line, const std::string& info);
+
 	static constexpr ResultCode failed_assertion = ResultCode("Failed Assertion", RV_SEVERITY_ERROR);
 	static constexpr ResultCode succeeded_assertion = ResultCode("Succeeded Assertion", RV_SEVERITY_INFO);
 
@@ -116,6 +133,13 @@ namespace rv
 
 #define rif_try_vkr(vkr)						rv_rif(rv_try_vkr(vkr))
 #define rif_try_vkr_info(vkr, msg)				rv_rif(rv_try_vkr_info(vkr, msg))
+
+
+#define rv_try_file(filename)					rv::try_file(filename, RV_FILE_LINE)
+#define rv_try_file_info(filename, msg)			rv::try_file(filename, RV_FILE_LINE, msg)
+
+#define rif_try_file(filename)					rv_rif(rv_try_file(filename))
+#define rif_try_file_info(filename, msg)		rv_rif(rv_try_file_info(filename, msg))
 
 
 #define rv_check(cond)							rv::check(cond, #cond, RV_FILE_LINE)

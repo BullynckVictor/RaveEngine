@@ -1,6 +1,7 @@
 #include "Engine/Utility/Error.h"
 #include "Engine/Utility/String.h"
 #include "Engine/Utility/VkResult.h"
+#include "Engine/Utility/File.h"
 
 rv::Condition::Condition(bool condition, const std::string& info, const char* cond_str)
 	:
@@ -30,6 +31,50 @@ rv::Result rv::make_runtime_error(const std::string& error)
 rv::Result rv::make_runtime_error(const std::string& error, const char* source, u64 line)
 {
 	return Result(runtime_error, new ErrorInfo(source, line, error));
+}
+
+rv::Result rv::try_file(const char* filename)
+{
+	if (FileExists(filename))
+		if constexpr (!keep_info_on_success)
+			return succeeded_file;
+		else
+			return Result(succeeded_file, new FileInfo(filename));
+	else
+		return Result(failed_file, new FileInfo(filename));
+}
+
+rv::Result rv::try_file(const char* filename, const char* source, u64 line)
+{
+	if (FileExists(filename))
+		if constexpr (!keep_info_on_success)
+			return succeeded_file;
+		else
+			return Result(succeeded_file, new FileInfo(source, line, filename));
+	else
+		return Result(failed_file, new FileInfo(source, line, filename));
+}
+
+rv::Result rv::try_file(const char* filename, const std::string& info)
+{
+	if (FileExists(filename))
+		if constexpr (!keep_info_on_success)
+			return succeeded_file;
+		else
+			return Result(succeeded_file, new FileInfo(filename, info));
+	else
+		return Result(failed_file, new FileInfo(filename, info));
+}
+
+rv::Result rv::try_file(const char* filename, const char* source, u64 line, const std::string& info)
+{
+	if (FileExists(filename))
+		if constexpr (!keep_info_on_success)
+			return succeeded_file;
+		else
+			return Result(succeeded_file, new FileInfo(source, line, filename, info));
+	else
+		return Result(failed_file, new FileInfo(source, line, filename, info));
 }
 
 rv::Result rv::assert(bool condition)
@@ -341,3 +386,15 @@ rv::Result rv::win32::assert(bool condition, const char* source, u64 line, const
 }
 
 #endif
+
+rv::FileInfo::FileInfo(const std::string& filename, const std::string& info)
+	:
+	ErrorInfo(str("Unable to open file \"", filename, "\"", info.empty() ? "" : "\n" + info))
+{
+}
+
+rv::FileInfo::FileInfo(const char* source, u64 line, const std::string& filename, const std::string& info)
+	:
+	ErrorInfo(source, line, str("Unable to open file \"", filename, "\"", info.empty() ? "" : "\n" + info))
+{
+}
