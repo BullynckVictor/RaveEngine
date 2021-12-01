@@ -25,6 +25,11 @@ rv::Result rv::win32::WindowClass::Create(WindowClass& window, const std::string
 }
 
 
+rv::win32::Window::~Window()
+{
+	SetWindowLongPtr(hwnd, GWLP_USERDATA, NULL);
+}
+
 rv::Result rv::win32::Window::Create(Window& window, const std::string& title, uint width, uint height, bool resize)
 {
 	WindowDescriptor desc;
@@ -171,7 +176,9 @@ LRESULT rv::win32::Window::SetupProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM 
 		{
 			Window* window = reinterpret_cast<Window*>(create->lpCreateParams);
 			if (window)
+			{
 				return window->WindowProc(hwnd, msg, wParam, lParam);
+			}
 		}
 	}
 	return DefWindowProc(hwnd, msg, wParam, lParam);
@@ -181,7 +188,9 @@ LRESULT rv::win32::Window::StaticWindowProc(HWND hwnd, UINT msg, WPARAM wParam, 
 {
 	Window* window = reinterpret_cast<Window*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
 	if (window)
+	{
 		return window->WindowProc(hwnd, msg, wParam, lParam);
+	}
 	return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 

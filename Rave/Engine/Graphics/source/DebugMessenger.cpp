@@ -157,6 +157,7 @@ rv::Result rv::DebugMessenger::StaticCheck()
 
 VKAPI_ATTR VkBool32 VKAPI_CALL rv::DebugMessenger::Callback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
 {
+	static bool thrown = false;
 	if (pUserData)
 	{
 		DebugMessenger& messenger = *reinterpret_cast<DebugMessenger*>(pUserData);
@@ -192,6 +193,11 @@ VKAPI_ATTR VkBool32 VKAPI_CALL rv::DebugMessenger::Callback(VkDebugUtilsMessageS
 		OutputDebugString(message.message.c_str());
 #endif
 
+	if (!thrown && messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
+	{
+		thrown = false;
+		Result(vulkan_debug_error, new VulkanDebugMessage(Message{ messageSeverity, pCallbackData->pMessage, pCallbackData->pMessageIdName })).throw_exception();
+	}
 	return VK_FALSE;
 }
 

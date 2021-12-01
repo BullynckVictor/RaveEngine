@@ -34,14 +34,14 @@ int main()
 	try
 	{
 		result = rave_main();
-		if (result.fatal())
+		if (result.failed())
 		{
 			message_box("rv::ResultException", result.exception("Application failed: 'rave_main()' returned fatal result").what(), result.severity());
 		}
 		else
 		{
 			result = rv::DebugMessenger::StaticCheck();
-			if (result.fatal())
+			if (result.failed())
 			{
 				message_box("rv::ResultException", result.exception("Application failed: Vulkan Debug Messenger returned fatal result").what(), result.severity());
 				rv::DebugMessenger::StaticFlush();

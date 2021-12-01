@@ -63,7 +63,7 @@ rv::Result rv::Graphics::Create(Graphics& graphics, const GraphicsInfo& info)
 	return result;
 }
 
-rv::Result rv::Graphics::GetShader(Shader*& outshader, const char* name, Flags<ShaderType, u32> type)
+rv::Result rv::Graphics::GetShader(Shader*& outshader, const char* name, ShaderType type)
 {
 	outshader = nullptr;
 	auto shader = shaders.find(name);
@@ -103,7 +103,7 @@ rv::Result rv::Graphics::GetShader(Shader*& outshader, const char* name, Flags<S
 	return success;
 }
 
-rv::Result rv::Graphics::CreateShader(const char* name, Flags<ShaderType, u32> type)
+rv::Result rv::Graphics::CreateShader(const char* name, ShaderType type)
 {
 	Shader* s = nullptr;
 	return GetShader(s, name, type);

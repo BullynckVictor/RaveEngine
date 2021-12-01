@@ -13,7 +13,7 @@ namespace rv
 		}
 	}
 
-	enum ShaderType
+	enum ShaderType : u32
 	{
 		RV_ST_VERTEX 					= detail::get_flag_bit(VK_SHADER_STAGE_VERTEX_BIT 					),
 		RV_ST_TESSELLATION_CONTROL 		= detail::get_flag_bit(VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT 	),
@@ -29,6 +29,7 @@ namespace rv
 		RV_ST_CALLABLE 					= detail::get_flag_bit(VK_SHADER_STAGE_CALLABLE_BIT_KHR 			),
 		RV_ST_TASK		 				= detail::get_flag_bit(VK_SHADER_STAGE_TASK_BIT_NV		 		 	),
 		RV_ST_MESH 						= detail::get_flag_bit(VK_SHADER_STAGE_MESH_BIT_NV 					),
+		RV_ST_NULL						= std::numeric_limits<u32>::max()
 	};
 
 	struct Shader
@@ -43,16 +44,18 @@ namespace rv
 
 		void Release();
 
-		static Result Create(Shader& shader, const Device& device, const char* filename, Flags<ShaderType, u32> type = {});
+		static Result Create(Shader& shader, const Device& device, const char* filename, ShaderType type = RV_ST_NULL);
 		static Result Compile(const char* source, const char* output);
-		static Result CompileAndCreate(Shader& shader, const Device& device, const char* source, const char* output, Flags<ShaderType, u32> type = {});
+		static Result CompileAndCreate(Shader& shader, const Device& device, const char* source, const char* output, ShaderType type = RV_ST_NULL);
 
-		static Flags<ShaderType, u32> GetShaderTypeFromFile(const char* path);
+		static ShaderType GetShaderTypeFromFile(const char* path);
 
 		VkShaderModule shader = VK_NULL_HANDLE;
-		Flags<ShaderType, u32> type;
+		ShaderType type = RV_ST_NULL;
 		const Device* device = nullptr;
 
 		static const char* vulkan_path;
 	};
+
+	typedef std::map<Identifier, Shader> ShaderMap;
 }

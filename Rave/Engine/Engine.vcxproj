@@ -61,7 +61,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir);$(VULKAN_SDK)\Include\</AdditionalIncludeDirectories>
-      <DisableSpecificWarnings>26812</DisableSpecificWarnings>
+      <DisableSpecificWarnings>26812;6011</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -82,7 +82,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir);$(VULKAN_SDK)\Include\</AdditionalIncludeDirectories>
-      <DisableSpecificWarnings>26812</DisableSpecificWarnings>
+      <DisableSpecificWarnings>26812;6011</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -107,7 +107,9 @@
     <ClCompile Include="Graphics\source\Graphics.cpp" />
     <ClCompile Include="Graphics\source\ImageView.cpp" />
     <ClCompile Include="Graphics\source\Instance.cpp" />
+    <ClCompile Include="Graphics\source\Pipeline.cpp" />
     <ClCompile Include="Graphics\source\Renderer.cpp" />
+    <ClCompile Include="Graphics\source\RenderPass.cpp" />
     <ClCompile Include="Graphics\source\Shader.cpp" />
     <ClCompile Include="Graphics\source\Surface.cpp" />
     <ClCompile Include="Graphics\source\SwapChain.cpp" />
@@ -133,7 +135,9 @@
     <ClInclude Include="Graphics\Graphics.h" />
     <ClInclude Include="Graphics\ImageView.h" />
     <ClInclude Include="Graphics\Instance.h" />
+    <ClInclude Include="Graphics\Pipeline.h" />
     <ClInclude Include="Graphics\Renderer.h" />
+    <ClInclude Include="Graphics\RenderPass.h" />
     <ClInclude Include="Graphics\Shader.h" />
     <ClInclude Include="Graphics\SwapChain.h" />
     <ClInclude Include="Graphics\Vulkan.h" />

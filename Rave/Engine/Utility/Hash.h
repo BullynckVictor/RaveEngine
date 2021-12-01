@@ -63,8 +63,9 @@ namespace rv
 		{
 			H hash = Fnv1a_constants<sizeof(H)>::offset;
 
-			for (const T* b = string; *b != 0; ++b)
-				hash = hash_element<H, T, 0>(b, hash);
+			if (string)
+				for (const T* b = string; *b != 0; ++b)
+					hash = hash_element<H, T, 0>(b, hash);
 
 			return hash;
 		}
@@ -95,6 +96,29 @@ namespace rv
 				is_cstring<T>();
 		}
 
+		template <typename T, typename = void>
+		struct is_iterable : std::false_type {};
+
+		// this gets used only when we can call std::begin() and std::end() on that type
+		template <typename T>
+		struct is_iterable<T, std::void_t<decltype(std::begin(std::declval<T>())),
+			decltype(std::end(std::declval<T>()))
+		>
+		> : std::true_type {};
+
+		// Here is a helper:
+		template <typename T>
+		constexpr bool is_iterable_v = is_iterable<T>::value;
+
+		template<typename H, typename T>
+		static constexpr H hash_range(const T& range)
+		{
+			H h;
+			for (const auto& element : range)
+				h = combine_hash<H>(h, hash<H>(element));
+			return h;
+		}
+
 		template<typename H, typename T, typename... Args>
 		static constexpr H hash(const T& value, const Args&... args)
 		{
@@ -102,6 +126,9 @@ namespace rv
 
 			if constexpr (std::is_array_v<T>)
 				h = fnv1a<H>(value, std::size(value));
+
+			else if constexpr (is_iterable_v<T>)
+				h = hash_range<H>(value);
 
 			else if constexpr (is_string<T>())
 				h = fnv1a<H>(value.data(), value.size());
@@ -122,7 +149,7 @@ namespace rv
 				h = fnv1a<H>(reinterpret_cast<const byte*>(&value), sizeof(T));
 
 			if constexpr (sizeof...(Args) != 0)
-				h = combine_hash<H>(h, hash(args...));
+				h = combine_hash<H>(h, hash<H>(args...));
 
 			return h;
 		}

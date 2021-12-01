@@ -19,9 +19,9 @@ rv::EventQueue::~EventQueue()
 
 void rv::EventQueue::PostEvent(EventData* event)
 {
+	std::lock_guard<std::mutex> guard(mutex);
 	for (auto& queue : queues)
 	{
-		std::lock_guard<std::mutex> guard(mutex);
 		queue.events.emplace_back(event);
 	}
 }

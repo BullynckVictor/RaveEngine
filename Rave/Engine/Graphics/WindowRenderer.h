@@ -12,11 +12,13 @@ namespace rv
 
 		static Result Create(
 			WindowRenderer& renderer, 
-			const Instance& instance, 
-			const Device& device, 
+			Engine& engine,
 			const WindowDescriptor& window = {},
 			const SwapChainPreferences& preferences = {}
 		);
+
+		Result GetPipeline(FullPipeline*& pipeline, const PipelineLayoutDescriptor& layout);
+		Result AddPipeline(const PipelineLayoutDescriptor& layout);
 
 		void EndFrame() override;
 
@@ -24,5 +26,6 @@ namespace rv
 
 	private:
 		SwapChain swap;
+		RenderPass clear;
 	};
 }

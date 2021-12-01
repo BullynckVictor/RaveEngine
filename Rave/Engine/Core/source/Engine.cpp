@@ -56,7 +56,8 @@ rv::Result rv::Engine::Create(Engine& engine, const Window& window)
 
 rv::Result rv::Engine::CreateWindowRenderer(WindowRenderer& renderer, const WindowDescriptor& window, const SwapChainPreferences& swap)
 {
-	auto result = WindowRenderer::Create(renderer, graphics.instance, graphics.device, window, swap);
+	auto result = WindowRenderer::Create(renderer, *this, window, swap);
+
 	if (result.failed())
 		return result;
 	check_debug();

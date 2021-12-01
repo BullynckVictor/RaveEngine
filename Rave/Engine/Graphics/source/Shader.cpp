@@ -38,17 +38,19 @@ void rv::Shader::Release()
 {
 	if (device)
 		release(shader, *device);
-	type.clear();
+	type = RV_ST_NULL;
 	device = nullptr;
 }
 
-rv::Result rv::Shader::Create(Shader& shader, const Device& device, const char* filename, Flags<ShaderType, u32> type)
+rv::Result rv::Shader::Create(Shader& shader, const Device& device, const char* filename, ShaderType type)
 {
 	shader.device = &device;
 	rv_result;
 
-	if (type.empty())
-		type = GetShaderTypeFromFile(filename);
+	if (type == RV_ST_NULL)
+		shader.type = GetShaderTypeFromFile(filename);
+	else
+		shader.type = type;
 
 	rif_try_file(filename);
 
@@ -78,44 +80,42 @@ rv::Result rv::Shader::Compile(const char* source, const char* output)
 	return result == EXIT_SUCCESS ? success : failure;
 }
 
-rv::Result rv::Shader::CompileAndCreate(Shader& shader, const Device& device, const char* source, const char* output, Flags<ShaderType, u32> type)
+rv::Result rv::Shader::CompileAndCreate(Shader& shader, const Device& device, const char* source, const char* output, ShaderType type)
 {
 	rv_result;
 	rv_rif(Compile(source, output));
 	return Create(shader, device, output, type);
 }
 
-rv::Flags<rv::ShaderType, rv::u32> rv::Shader::GetShaderTypeFromFile(const char* path)
+rv::ShaderType rv::Shader::GetShaderTypeFromFile(const char* path)
 {
-	Flags<ShaderType, u32> type;
-
 	if (strstr(path, ".vert"))
-		type |= RV_ST_VERTEX;
+		return RV_ST_VERTEX;
 	if (strstr(path, ".tesc"))
-		type |= RV_ST_TESSELLATION_CONTROL;
+		return RV_ST_TESSELLATION_CONTROL;
 	if (strstr(path, ".tese"))
-		type |= RV_ST_TESSELLATION_EVALUATION;
+		return RV_ST_TESSELLATION_EVALUATION;
 	if (strstr(path, ".geom"))
-		type |= RV_ST_GEOMETRY;
+		return RV_ST_GEOMETRY;
 	if (strstr(path, ".frag"))
-		type |= RV_ST_FRAGMENT;
+		return RV_ST_FRAGMENT;
 	if (strstr(path, ".comp"))
-		type |= RV_ST_COMPUTE;
+		return RV_ST_COMPUTE;
 	if (strstr(path, ".mesh"))
-		type |= RV_ST_MESH;
+		return RV_ST_MESH;
 	if (strstr(path, ".task"))
-		type |= RV_ST_TASK;
+		return RV_ST_TASK;
 	if (strstr(path, ".rgen"))
-		type |= RV_ST_RAYGEN;
+		return RV_ST_RAYGEN;
 	if (strstr(path, ".rint"))
-		type |= RV_ST_INTERSECTION;
+		return RV_ST_INTERSECTION;
 	if (strstr(path, ".rahit"))
-		type |= RV_ST_ANY_HIT;
+		return RV_ST_ANY_HIT;
 	if (strstr(path, ".rchit"))
-		type |= RV_ST_CLOSEST_HIT;
+		return RV_ST_CLOSEST_HIT;
 	if (strstr(path, ".rmiss"))
-		type |= RV_ST_MISS;
+		return RV_ST_MISS;
 	if (strstr(path, ".rcall"))
-		type |= RV_ST_CALLABLE;
-	return type;
+		return RV_ST_CALLABLE;
+	return RV_ST_NULL;
 }

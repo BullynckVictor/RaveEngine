@@ -7,6 +7,7 @@
 #include "Engine/Graphics/SwapChain.h"
 #include "Engine/Graphics/Shader.h"
 #include "Engine/Utility/File.h"
+#include "Engine/Graphics/Pipeline.h"
 
 namespace rv
 {
@@ -28,8 +29,8 @@ namespace rv
 		Graphics() = default;
 		static Result Create(Graphics& graphics, const GraphicsInfo& info = {});
 
-		Result GetShader(Shader*& shader, const char* name, Flags<ShaderType, u32> type = {});
-		Result CreateShader(const char* name, Flags<ShaderType, u32> type = {});
+		Result GetShader(Shader*& shader, const char* name, ShaderType type = RV_ST_NULL);
+		Result CreateShader(const char* name, ShaderType type = RV_ST_NULL);
 		Result AddShaderPath(const char* path);
 
 	private:
@@ -37,9 +38,11 @@ namespace rv
 		rv_debug_only(DebugMessenger debug;);
 		Device device;
 
-		std::map<Identifier, Shader> shaders;
+		ShaderMap shaders;
 		std::vector<std::filesystem::path> shaderpaths;
 
 		friend class Engine;
+		friend class Renderer;
+		friend class WindowRenderer;
 	};
 }

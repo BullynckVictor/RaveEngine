@@ -90,6 +90,7 @@ namespace rv
 		{
 		public:
 			Window() = default;
+			~Window();
 
 			static Result Create(Window& window, const std::string& title, uint width, uint height, bool resize = false);
 			static Result Create(Window& window, const WindowDescriptor& descriptor);
@@ -127,6 +128,7 @@ namespace rv
 			bool minimized = true;
 			uint dpi = 96;
 			Point position;
+			std::mutex mutex;
 			
 			static WindowClass wclass;
 		};

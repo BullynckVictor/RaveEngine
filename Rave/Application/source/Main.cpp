@@ -9,14 +9,18 @@ rv::Result rave_main()
 	rv::WindowRenderer renderer;
 	rv::InputManager input(renderer.window);
 
-	rv::Shader* fragment;
-	rv::Shader* vertex;
-
 	rv_rif(rv::Engine::Create(engine));
 	rv_rif(engine.CreateWindowRenderer(renderer, "Hello world", 600, 370));
 
-	rv_rif(engine.graphics.GetShader(vertex,	"triangle.vert"));
-	rv_rif(engine.graphics.GetShader(fragment,	"triangle.frag"));
+	rv::FullPipeline* pipeline;
+	rv::PipelineLayoutDescriptor layout;
+	layout.shaders = {
+		"triangle.vert",
+		"triangle.frag"
+	};
+	layout.renderpass = "color";
+	layout.rehash();
+	rv_rif(renderer.GetPipeline(pipeline, layout));
 
 	while (renderer.window.HandleMessages())
 	{
