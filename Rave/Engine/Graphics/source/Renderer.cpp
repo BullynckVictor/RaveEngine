@@ -9,12 +9,9 @@ rv::Renderer::Renderer(Engine& e)
 {
 }
 
-void rv::Renderer::BeginFrame()
+rv::Result rv::Renderer::Render()
 {
-}
-
-void rv::Renderer::EndFrame()
-{
+	return success;
 }
 
 void rv::Renderer::SetEngine(Engine& e)
@@ -22,6 +19,7 @@ void rv::Renderer::SetEngine(Engine& e)
 	engine = &e;
 }
 
+/*
 rv::Result rv::Renderer::AddRenderPass(RenderPass*& pass, const Identifier& name, const RenderPassDescriptor& descriptor)
 {
 	rv_result;
@@ -50,7 +48,7 @@ rv::RenderPass* rv::Renderer::GetRenderPass(const Identifier& name)
 	auto it = passes.find(name);
 	return (it == passes.end()) ? nullptr : &it->second;
 }
-
+*/
 rv::FullPipeline* rv::Renderer::GetCachedPipeline(const PipelineLayoutDescriptor& layout)
 {
 	auto it = pipelines.find(layout);
@@ -71,9 +69,9 @@ rv::Result rv::Renderer::PrepNewPipeline(FullPipeline*& pipeline, const Pipeline
 		pipeline->layout.AddShader(*s);
 	}
 
-	RenderPass* pass = GetRenderPass(layout.renderpass);
-	rif_assert(pass);
-	pipeline->layout.AddRenderPass(*pass, layout.subpass);
+//	RenderPass* pass = GetRenderPass(layout.renderpass);
+//	rif_assert(pass);
+//	pipeline->layout.AddRenderPass(*pass, layout.subpass);
 
 	return result;
 }

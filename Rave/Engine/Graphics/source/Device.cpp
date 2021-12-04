@@ -115,7 +115,11 @@ rv::Queue rv::Device::GetQueue(const QueueFamilyGetter& family, u32 index) const
 	Queue queue;
 	OIndex32 f = physical.GetQueueFamilies().GetFamily(family);
 	if (f.valid())
-		vkGetDeviceQueue(device, f.value, index, &queue.queue);		
+	{
+		vkGetDeviceQueue(device, f.value, index, &queue.queue);
+		queue.family = f.value;
+		queue.index = index;
+	}
 	return queue;
 }
 

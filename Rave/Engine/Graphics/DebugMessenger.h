@@ -36,7 +36,7 @@ namespace rv
 
 			VkDebugUtilsMessageSeverityFlagBitsEXT severity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT;
 			std::string message;
-			const char* messageIDName = nullptr;
+			std::string messageIDName;
 		};
 
 		void Flush();

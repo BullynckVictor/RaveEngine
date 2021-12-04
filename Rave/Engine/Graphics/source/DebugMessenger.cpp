@@ -145,7 +145,7 @@ rv::Result rv::DebugMessenger::Check() const
 
 bool rv::DebugMessenger::Message::Valid() const
 {
-	return messageIDName;
+	return !messageIDName.empty();
 }
 
 rv::Result rv::DebugMessenger::StaticCheck()

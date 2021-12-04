@@ -21,9 +21,12 @@ namespace rv
 
 		u32 AddSubpass();
 		void AddColorAttachment(u32 subpass, VkFormat format, VkAttachmentLoadOp loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE, VkAttachmentStoreOp storeOp = VK_ATTACHMENT_STORE_OP_STORE);
+		void AddDependency(const VkSubpassDependency& dependency);
+		void AddColorDependency(u32 subpass = 0);
 
 		std::vector<VkAttachmentDescription> attachments;
 		std::vector<Subpass> subpasses;
+		std::vector<VkSubpassDependency> dependencies;
 	};
 
 	struct RenderPass

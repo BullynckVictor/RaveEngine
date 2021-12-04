@@ -10,21 +10,14 @@ rv::Result rave_main()
 	rv::InputManager input(renderer.window);
 
 	rv_rif(rv::Engine::Create(engine));
-	rv_rif(engine.CreateWindowRenderer(renderer, "Hello world", 600, 370));
+	rv_rif(rv::WindowRenderer::Create(renderer, engine, "Hello World", 600, 370));
 
-	rv::FullPipeline* pipeline;
-	rv::PipelineLayoutDescriptor layout;
-	layout.shaders = {
-		"triangle.vert",
-		"triangle.frag"
-	};
-	layout.renderpass = "color";
-	layout.rehash();
-	rv_rif(renderer.GetPipeline(pipeline, layout));
+	rv::Shape triangle;
+	rv_rif(renderer.CreateShape(triangle));
 
 	while (renderer.window.HandleMessages())
 	{
-
+		renderer.Render();
 	}
 
 	return result;

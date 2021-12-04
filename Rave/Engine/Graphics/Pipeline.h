@@ -18,8 +18,8 @@ namespace rv
 		bool clockwise = true;
 		bool blending = false;
 		std::vector<const char*> shaders;
-		const char* renderpass = nullptr;
-		u32 subpass = 0;
+//		const char* renderpass = nullptr;
+//		u32 subpass = 0;
 		size_t hash = 0;
 
 		size_t rehash();
@@ -66,6 +66,13 @@ namespace rv
 		const Device* device = nullptr;
 	};
 
+	enum PipelineType
+	{
+		RV_PT_GRAPHICS = VK_PIPELINE_BIND_POINT_GRAPHICS,
+		RV_PT_COMPUTE = VK_PIPELINE_BIND_POINT_COMPUTE,
+		RV_PT_RAYTRACING = VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR
+	};
+
 	struct Pipeline
 	{
 		Pipeline() = default;
@@ -88,6 +95,7 @@ namespace rv
 		void Release();
 
 		VkPipeline pipeline = VK_NULL_HANDLE;
+		PipelineType type = RV_PT_GRAPHICS;
 		const Device* device = nullptr;
 	};
 

@@ -364,6 +364,27 @@ namespace rv
 		return static_cast<T1>(x);
 	}
 
+	namespace detail
+	{
+		template<size_t S, typename T1, typename I1, typename T2, typename I2, size_t D = 0>
+		requires BasicVectorConcept<S, T1, I1>&& BasicVectorConcept<S, T2, I2>
+		static constexpr void convert(BasicVector<S, T1, I1>& v1, const BasicVector<S, T2, I2>& v2)
+		{
+			v1.get_element<D>() = convert_element<T1, I1, T2, I2>(v2.get_element<D>());
+			if constexpr (D < S - 1)
+				convert<S, T1, I1, T2, I2, D + 1>(v1, v2);
+		}
+	}
+
+	template<size_t S, typename T1, typename I1, typename T2, typename I2>
+	requires BasicVectorConcept<S, T1, I1>&& BasicVectorConcept<S, T2, I2>
+	static constexpr BasicVector<S, T1, I1> convert(const BasicVector<S, T2, I2>& v)
+	{
+		BasicVector<S, T1, I1> vector;
+		detail::convert(vector, v);
+		return vector;
+	}
+
 	template<size_t S, typename T1, typename I1, typename T2, typename I2, size_t D = 0>
 	requires BasicVectorConcept<S, T1, I1> && BasicVectorConcept<S, T2, I2>
 	static constexpr T1 dot(const BasicVector<S, T1, I1>& a, const BasicVector<S, T2, I2>& b)

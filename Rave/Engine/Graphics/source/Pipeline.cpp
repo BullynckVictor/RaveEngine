@@ -259,9 +259,9 @@ size_t rv::PipelineLayoutDescriptor::rehash()
 		cullMode,
 		clockwise,
 		blending,
-		shaders,
-		renderpass,
-		subpass
+		shaders //,
+//		renderpass,
+//		subpass
 	);
 	return hash;
 }

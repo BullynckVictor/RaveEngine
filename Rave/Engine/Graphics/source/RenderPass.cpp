@@ -51,6 +51,8 @@ rv::Result rv::RenderPass::Create(RenderPass& pass, const Device& device, const 
 	renderPassInfo.pAttachments = descriptor.attachments.data();
 	renderPassInfo.subpassCount = (u32)sub.size();
 	renderPassInfo.pSubpasses = sub.data();
+	renderPassInfo.dependencyCount = (u32)descriptor.dependencies.size();
+	renderPassInfo.pDependencies = descriptor.dependencies.data();
 
 	return rv_try_vkr(vkCreateRenderPass(device.device, &renderPassInfo, nullptr, &pass.pass));
 }
@@ -86,4 +88,21 @@ void rv::RenderPassDescriptor::AddColorAttachment(u32 subpass, VkFormat format, 
 	ref.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
 	subpasses[subpass].color.push_back(ref);
+}
+
+void rv::RenderPassDescriptor::AddDependency(const VkSubpassDependency& dependency)
+{
+	dependencies.push_back(dependency);
+}
+
+void rv::RenderPassDescriptor::AddColorDependency(u32 subpass)
+{
+	VkSubpassDependency dependency{};
+	dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+	dependency.dstSubpass = 0;
+	dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	dependency.srcAccessMask = 0;
+	dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+	AddDependency(dependency);
 }

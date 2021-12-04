@@ -121,6 +121,7 @@ rv::Result rv::SwapChain::Create(SwapChain& swap, const Device& device, Surface&
 		rv_rif(ImageView::Create(swap.views[i], device, swap.images[i], swap.format.format));
 
 	swap.surface = std::move(surface);
+	swap.imagesInFlight.resize(swap.images.size(), VK_NULL_HANDLE);
 
 	return result;
 }
@@ -130,6 +131,14 @@ rv::Result rv::SwapChain::Create(SwapChain& swap, const Instance& instance, cons
 	Surface surface;
 	Surface::Create(surface, instance, window);
 	return Create(swap, device, std::move(surface), window.Size(), preferences);
+}
+
+rv::ResultValue<rv::u32> rv::SwapChain::NextImage(const Semaphore* semaphore, const Fence* fence, u64 wait) const
+{
+	u32 image = 0;
+	ResultValue<rv::u32> result = rv_try_vkr(vkAcquireNextImageKHR(device->device, swap, wait, semaphore ? semaphore->semaphore : nullptr, fence ? fence->fence : nullptr, &image));
+	result.value = image;
+	return result;
 }
 
 rv::Result rv::SwapChainSupportDetails::Create(SwapChainSupportDetails& details, const Surface& surface, const PhysicalDevice& device)

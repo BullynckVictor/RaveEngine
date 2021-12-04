@@ -53,25 +53,3 @@ rv::Result rv::Engine::Create(Engine& engine, const Window& window)
 	GraphicsInfo info = GraphicsInfo({ window });
 	return Create(engine, info);
 }
-
-rv::Result rv::Engine::CreateWindowRenderer(WindowRenderer& renderer, const WindowDescriptor& window, const SwapChainPreferences& swap)
-{
-	auto result = WindowRenderer::Create(renderer, *this, window, swap);
-
-	if (result.failed())
-		return result;
-	check_debug();
-	return success;
-}
-
-rv::Result rv::Engine::CreateWindowRenderer(WindowRenderer& renderer, const std::string& title, uint width, uint height, bool vsync, bool resize)
-{
-	WindowDescriptor window;
-	SwapChainPreferences swap(vsync);
-
-	window.title = title;
-	window.size = { width, height };
-	window.resize = resize;
-
-	return CreateWindowRenderer(renderer, window, swap);
-}

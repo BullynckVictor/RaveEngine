@@ -44,5 +44,6 @@ namespace rv
 		friend class Engine;
 		friend class Renderer;
 		friend class WindowRenderer;
+		friend class WindowRendererHelper;
 	};
 }

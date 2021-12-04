@@ -16,9 +16,6 @@ namespace rv
 		static Result Create(Engine& engine, const Surface& surface);
 		static Result Create(Engine& engine, const Window& window);
 
-		Result CreateWindowRenderer(WindowRenderer& renderer, const WindowDescriptor& window, const SwapChainPreferences& swap);
-		Result CreateWindowRenderer(WindowRenderer& renderer, const std::string& title, uint width, uint height, bool vsync = true, bool resize = false);
-
 		Graphics graphics;
 	};
 }
