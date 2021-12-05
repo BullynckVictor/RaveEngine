@@ -81,6 +81,8 @@ namespace rv
 		static Result Submit(const SubmitInfo& submitInfo, const Queue& queue, const Fence* fence = nullptr);
 		static Result Submit(const std::vector<SubmitInfo>& submitInfos, const Queue& queue, const Fence* fence = nullptr);
 
+		Result Reset(bool release = false);
+
 		VkCommandBuffer buffer = VK_NULL_HANDLE;
 		const Device* device = nullptr;
 	};

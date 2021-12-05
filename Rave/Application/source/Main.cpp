@@ -10,7 +10,7 @@ rv::Result rave_main()
 	rv::InputManager input(renderer.window);
 
 	rv_rif(rv::Engine::Create(engine));
-	rv_rif(rv::WindowRenderer::Create(renderer, engine, "Hello World", 600, 370));
+	rv_rif(rv::WindowRenderer::Create(renderer, engine, "Hello World", 600, 370, rv::FColors::Silver, true, true));
 
 	rv::Shape triangle;
 	rv_rif(renderer.CreateShape(triangle));

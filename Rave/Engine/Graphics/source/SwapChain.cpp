@@ -42,6 +42,7 @@ rv::SwapChain::~SwapChain()
 
 void rv::SwapChain::Release()
 {
+	presentQueue.Wait();
 	if (device)
 		release(swap, *device);
 	surface.Release();
@@ -134,12 +135,38 @@ rv::Result rv::SwapChain::Create(SwapChain& swap, const Instance& instance, cons
 	return Create(swap, device, std::move(surface), window.Size(), preferences);
 }
 
-rv::ResultValue<rv::u32> rv::SwapChain::NextImage(const Semaphore* semaphore, const Fence* fence, u64 wait) const
+rv::Result rv::SwapChain::NextImage(u32& image, bool& resized, const Semaphore* semaphore, const Fence* fence, u64 wait) const
 {
-	u32 image = 0;
-	ResultValue<rv::u32> result = rv_try_vkr(vkAcquireNextImageKHR(device->device, swap, wait, semaphore ? semaphore->semaphore : nullptr, fence ? fence->fence : nullptr, &image));
-	result.value = image;
-	return result;
+	resized = false;
+	VkResult vkr = vkAcquireNextImageKHR(device->device, swap, wait, semaphore ? semaphore->semaphore : nullptr, fence ? fence->fence : nullptr, &image);
+	if (vkr == VK_ERROR_OUT_OF_DATE_KHR)
+	{
+		resized = true;
+		return succeeded_vkr;
+	}
+	if (vkr == VK_SUBOPTIMAL_KHR)
+		return succeeded_vkr;
+	return rv_try_vkr(vkr);
+}
+
+rv::Result rv::SwapChain::Present(u32 image, const Semaphore& wait, bool& resized)
+{
+	VkPresentInfoKHR presentInfo{};
+	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+	presentInfo.waitSemaphoreCount = 1;
+	presentInfo.pWaitSemaphores = &wait.semaphore;
+	presentInfo.swapchainCount = 1;
+	presentInfo.pSwapchains = &swap;
+	presentInfo.pImageIndices = &image;
+	VkResult vkr = vkQueuePresentKHR(presentQueue.queue, &presentInfo);
+
+	if (vkr == VK_ERROR_OUT_OF_DATE_KHR || vkr == VK_SUBOPTIMAL_KHR)
+	{
+		resized = true;
+		return succeeded_vkr;
+	}
+	resized = false;
+	return rv_try_vkr(vkr);
 }
 
 rv::Result rv::SwapChainSupportDetails::Create(SwapChainSupportDetails& details, const Surface& surface, const PhysicalDevice& device)

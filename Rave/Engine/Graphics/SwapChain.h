@@ -42,7 +42,8 @@ namespace rv
 		static Result Create(SwapChain& swap, const Device& device, Surface&& surface, const Extent2D& size, const SwapChainPreferences& preferences = {});
 		static Result Create(SwapChain& swap, const Instance& instance, const Device& device, const Window& window, const SwapChainPreferences& preferences = {});
 
-		ResultValue<u32> NextImage(const Semaphore* semaphore = nullptr, const Fence* fence = nullptr, u64 wait = std::numeric_limits<u64>::max()) const;
+		Result NextImage(u32& image, bool& resized, const Semaphore* semaphore = nullptr, const Fence* fence = nullptr, u64 wait = std::numeric_limits<u64>::max()) const;
+		Result Present(u32 image, const Semaphore& wait, bool& resized);
 
 		VkSwapchainKHR swap = VK_NULL_HANDLE;
 		Surface surface;

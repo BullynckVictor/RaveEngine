@@ -177,6 +177,8 @@ namespace rv
 		Queue GetQueue(u32 family, u32 index = 0) const;
 		Queue GetQueue(const QueueFamilyGetter& family, u32 index = 0) const;
 
+		Result Wait() const;
+
 		VkDevice device = VK_NULL_HANDLE;
 		PhysicalDevice physical;
 		Queue graphicsQueue;

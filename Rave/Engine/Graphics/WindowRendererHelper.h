@@ -17,6 +17,7 @@ namespace rv
 			{
 				managed.data = new D();
 				renderer.engine->graphics.AddDrawable(managed.data);
+				renderer.drawables.push_back(managed.data);
 			}
 
 			D& drawable = *managed.data;

@@ -13,54 +13,30 @@
 #	define check_debug_static()
 #endif
 
+rv::WindowRenderer::~WindowRenderer()
+{
+	if (engine)
+		engine->graphics.device.Wait();
+}
+
 rv::Result rv::WindowRenderer::Create(WindowRenderer& renderer, Engine& engine, const FColor& background, const WindowDescriptor& window, const SwapChainPreferences& preferences)
 {
 	rv_result;
 
 	renderer.SetEngine(engine);
 	renderer.background = background;
+	renderer.swapPreferences = preferences;
+
+	rv_rif(CommandPool::CreateGraphics(renderer.drawPool, engine.graphics.device, true));
+	check_debug_static();
 
 	rv_rif(Window::Create(renderer.window, window));
-	rv_rif(SwapChain::Create(renderer.swap, engine.graphics.instance, engine.graphics.device, renderer.window, preferences));
-	check_debug_static();
-
-	RenderPassDescriptor color;
-	color.AddSubpass();
-	color.AddColorAttachment(0, renderer.swap.format.format);
-	color.AddColorDependency();
-	rv_rif(RenderPass::Create(renderer.colorPass, engine.graphics.device, color));
-	check_debug_static();
-//	rv_rif(renderer.AddRenderPass("color", color));
-	RenderPassDescriptor clear;
-	clear.AddSubpass();
-	clear.AddColorAttachment(0, renderer.swap.format.format, VK_ATTACHMENT_LOAD_OP_CLEAR);
-	clear.AddColorDependency();
-	rv_rif(RenderPass::Create(renderer.clearPass, engine.graphics.device, clear));
-	check_debug_static();
-
-	renderer.frameBuffers.resize(renderer.swap.images.size());
-	for (size_t i = 0; i < renderer.frameBuffers.size(); ++i)
-		rv_rif(FrameBuffer::Create(renderer.frameBuffers[i], engine.graphics.device, renderer.colorPass, renderer.window.Size(), renderer.swap.views[i]));
-	check_debug_static();
-
-	renderer.drawCommands.resize(renderer.frameBuffers.size());
-
-	rv_rif(CommandPool::CreateGraphics(renderer.drawPool, engine.graphics.device));
-	check_debug_static();
-
-	for (size_t i = 0; i < renderer.drawCommands.size(); ++i)
-	{
-		CommandBuffer& clear = renderer.drawCommands[i].emplace_back();
-		rv_rif(CommandBuffer::Create(clear, engine.graphics.device, renderer.drawPool));
-		rv_rif(clear.Begin());
-		clear.StartRenderPass(renderer.clearPass, renderer.frameBuffers[i], 0, renderer.window.Size(), background);
-		clear.EndRenderPass();
-		rv_rif(clear.End());
-	}
+	rv_rif(renderer.Resize());
 
 	renderer.frames.resize(2);
 	rv_rif(Frame::Create(renderer.frames[0], engine.graphics.device, renderer.swap));
 	rv_rif(Frame::Create(renderer.frames[1], engine.graphics.device, renderer.swap));
+	renderer.window.Resized();
 	return result;
 }
 
@@ -119,14 +95,24 @@ rv::Result rv::WindowRenderer::CreateShape(Shape& shape)
 
 rv::Result rv::WindowRenderer::Render()
 {
+
+	if (window.Minimized())
+		return success;
 	Result result;
-	ResultValue<u32> image;
+
+	if (window.Resized())
+		rv_rif(Resize());
+
+	u32 image;
 	u32 currentFrame = nextFrame;
+	bool resized;
 	nextFrame = (currentFrame + 1) % (u32)frames.size();
-	image = frames[currentFrame].Start();
-	if (image.failed())
-		return image;
-	for (auto it = drawCommands[image.value].begin(); it < drawCommands[image.value].end() - 1; ++it)
+	rv_rif(frames[currentFrame].Start(image, resized));
+
+	if (resized)
+		return Resize();
+
+	for (auto it = drawCommands[image].begin(); it < drawCommands[image].end() - 1; ++it)
 	{
 		const CommandBuffer& draw = *it;
 		Result r = frames[currentFrame].Render(draw);
@@ -138,9 +124,78 @@ rv::Result rv::WindowRenderer::Render()
 		}
 	}
 	if (!drawCommands.empty())
-		frames[currentFrame].RenderLast(drawCommands[image.value].back());
-	Result r = frames[currentFrame].End();
+		frames[currentFrame].RenderLast(drawCommands[image].back());
+	Result r = frames[currentFrame].End(resized);
+	if (resized)
+		return Resize();
 	if (r.severity() > result.severity())
 		return r;
+	return result;
+}
+
+rv::Result rv::WindowRenderer::Resize()
+{
+	rv_result;
+
+	VkFormat oldFormat = swap.format.format;
+	bool resized = swap.swap;
+
+	rv_rif(SwapChain::Create(swap, engine->graphics.instance, engine->graphics.device, window, swapPreferences));
+	check_debug();
+
+	if (!resized || oldFormat != swap.format.format)
+	{
+		RenderPassDescriptor color;
+		color.AddSubpass();
+		color.AddColorAttachment(0, swap.format.format);
+		color.AddColorDependency();
+		rv_rif(RenderPass::Create(colorPass, engine->graphics.device, color));
+		check_debug();
+		RenderPassDescriptor clear;
+		clear.AddSubpass();
+		clear.AddColorAttachment(0, swap.format.format, VK_ATTACHMENT_LOAD_OP_CLEAR);
+		clear.AddColorDependency();
+		rv_rif(RenderPass::Create(clearPass, engine->graphics.device, clear));
+		check_debug();
+	}
+
+	frameBuffers.resize(swap.images.size());
+	for (size_t i = 0; i < frameBuffers.size(); ++i)
+		rv_rif(FrameBuffer::Create(frameBuffers[i], engine->graphics.device, colorPass, window.Size(), swap.views[i]));
+	check_debug();
+
+	drawCommands.resize(frameBuffers.size());
+	for (size_t i = 0; i < drawCommands.size(); ++i)
+	{
+		CommandBuffer& clear = resized ? drawCommands[i][0] : drawCommands[i].emplace_back();
+		if (!resized)
+			rv_rif(CommandBuffer::Create(clear, engine->graphics.device, drawPool));
+		else
+			rv_rif(clear.Reset());
+		rv_rif(clear.Begin());
+		clear.StartRenderPass(clearPass, frameBuffers[i], 0, window.Size(), background);
+		clear.EndRenderPass();
+		rv_rif(clear.End());
+	}
+
+	for (auto& pipeline : pipelines)
+	{
+		pipeline.second.layout.SetSize(window.Size());
+		pipeline.second.layout.pass = colorPass.pass;
+		rv_rif(Pipeline::Create(pipeline.second.pipeline, engine->graphics.device, pipeline.second.layout));
+	}
+
+	size_t size = drawCommands[0].size();
+	for (size_t i = 1; i < size; ++i)
+		for (size_t j = 0; j < drawCommands.size(); ++j)
+		{
+			CommandBuffer& draw = drawCommands[j][i];
+			rv_rif(draw.Begin());
+			draw.StartRenderPass(colorPass, frameBuffers[j], 0, window.Size());
+			drawables[i - 1]->RecordCommand(draw, (u32)j);
+			draw.EndRenderPass();
+			rv_rif(draw.End());
+		}
+
 	return result;
 }

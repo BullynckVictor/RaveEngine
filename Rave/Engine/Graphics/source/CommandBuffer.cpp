@@ -201,6 +201,13 @@ rv::Result rv::CommandBuffer::Submit(const std::vector<SubmitInfo>& submitInfos,
 	return rv_try_vkr(vkQueueSubmit(queue.queue, (u32)submitInfo.size(), submitInfo.data(), fence ? fence->fence : VK_NULL_HANDLE));
 }
 
+rv::Result rv::CommandBuffer::Reset(bool release)
+{
+	if (buffer)
+		return rv_try_vkr(vkResetCommandBuffer(buffer, release ? VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT : 0));
+	return success;
+}
+
 void rv::SubmitInfo::AddCommandBuffer(const CommandBuffer& buffer)
 {
 	buffers.push_back(buffer.buffer);

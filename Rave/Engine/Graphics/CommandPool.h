@@ -15,8 +15,8 @@ namespace rv
 
 		void Release();
 
-		static Result Create(CommandPool& pool, const Device& device, u32 family);
-		static Result CreateGraphics(CommandPool& pool, const Device& device);
+		static Result Create(CommandPool& pool, const Device& device, u32 family, bool reset = false);
+		static Result CreateGraphics(CommandPool& pool, const Device& device, bool reset = false);
 
 		VkCommandPool pool = VK_NULL_HANDLE;
 		const Device* device = nullptr;

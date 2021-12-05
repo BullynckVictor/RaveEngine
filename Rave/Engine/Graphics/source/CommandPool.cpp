@@ -32,7 +32,7 @@ void rv::CommandPool::Release()
 		release(pool, *device);
 }
 
-rv::Result rv::CommandPool::Create(CommandPool& pool, const Device& device, u32 family)
+rv::Result rv::CommandPool::Create(CommandPool& pool, const Device& device, u32 family, bool reset)
 {
 	pool.Release();
 
@@ -40,10 +40,11 @@ rv::Result rv::CommandPool::Create(CommandPool& pool, const Device& device, u32 
 	VkCommandPoolCreateInfo createInfo{};
 	createInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 	createInfo.queueFamilyIndex = family;
+	createInfo.flags = reset ? VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT : 0;
 	return rv_try_vkr(vkCreateCommandPool(device.device, &createInfo, nullptr, &pool.pool));
 }
 
-rv::Result rv::CommandPool::CreateGraphics(CommandPool& pool, const Device& device)
+rv::Result rv::CommandPool::CreateGraphics(CommandPool& pool, const Device& device, bool reset)
 {
-	return Create(pool, device, device.graphicsQueue.family);
+	return Create(pool, device, device.graphicsQueue.family, reset);
 }

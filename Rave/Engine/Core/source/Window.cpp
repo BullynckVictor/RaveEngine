@@ -156,6 +156,18 @@ rv::Result rv::win32::Window::Close()
 	return rv_win32_check(DestroyWindow(hwnd));
 }
 
+bool rv::win32::Window::Resized()
+{
+	bool temp = resized;
+	resized = false;
+	return temp;
+}
+
+bool rv::win32::Window::PeekResized() const
+{
+	return resized;
+}
+
 bool rv::win32::Window::HandleMessages()
 {
 	MSG msg;
@@ -220,6 +232,8 @@ LRESULT rv::win32::Window::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM
 			else
 			{
 				minimized = false;
+				if (wParam != SIZE_RESTORED)
+					resized = true;
 				descriptor.size.width = (uint)LOWORD(lParam);
 				descriptor.size.height = (uint)HIWORD(lParam);
 				EmplaceEvent<WindowResizedEvent>(descriptor.size);

@@ -10,13 +10,12 @@ namespace rv
 		Frame() = default;
 		Frame(SwapChain& swap);
 
-		ResultValue<u32> NextImage(const Semaphore* semaphore = nullptr, const Fence* fence = nullptr);
 		void SetSwapChain(SwapChain& swap);
 
-		ResultValue<u32> Start();
+		Result Start(u32& image, bool& resized);
 		Result Render(const CommandBuffer& drawCommand);
 		Result RenderLast(const CommandBuffer& drawCommand);
-		Result End();
+		Result End(bool& resized);
 
 		static Result Create(Frame& frame, const Device& device, SwapChain& swap);
 

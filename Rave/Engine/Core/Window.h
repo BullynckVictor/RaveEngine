@@ -113,6 +113,9 @@ namespace rv
 			bool Open() const;
 			Result Close();
 
+			bool Resized();
+			bool PeekResized() const;
+
 			bool HandleMessages();
 
 		private:
@@ -128,7 +131,7 @@ namespace rv
 			bool minimized = true;
 			uint dpi = 96;
 			Point position;
-			std::mutex mutex;
+			bool resized = false;
 			
 			static WindowClass wclass;
 		};

@@ -7,34 +7,33 @@ rv::Frame::Frame(SwapChain& swap)
 {
 }
 
-rv::ResultValue<rv::u32> rv::Frame::NextImage(const Semaphore* semaphore, const Fence* fence)
-{
-	rv_result;
-	rif_assert(swap);
-	return swap->NextImage(semaphore, fence, timeout);
-}
-
 void rv::Frame::SetSwapChain(SwapChain& s)
 {
 	swap = &s;
 }
 
-rv::ResultValue<rv::u32> rv::Frame::Start()
+rv::Result rv::Frame::Start(u32& image, bool& resized)
 {
+	rv_result;
+	rif_assert(swap);
+
 	inFlight.Wait();
 
-	auto result = NextImage(&imageAvailable);
-	image = result.value;
+	result = swap->NextImage(image, resized, &imageAvailable);
+	this->image = image;
 
-	if (swap->imagesInFlight[image] != VK_NULL_HANDLE) {
+	rv_rif(result);
+
+	if (swap->imagesInFlight[image] != VK_NULL_HANDLE)
 		vkWaitForFences(swap->device->device, 1, &swap->imagesInFlight[image], VK_TRUE, UINT64_MAX);
-	}
+
 	swap->imagesInFlight[image] = inFlight.fence;
 
-	auto a = rv_assert(!first);
-	if (a.failed())
-		return a;
-	first = true;
+	{
+		rv_result;
+		rif_assert(!first);
+		first = true;
+	}
 
 	return result;
 }
@@ -54,17 +53,9 @@ rv::Result rv::Frame::RenderLast(const CommandBuffer& drawCommand)
 	return result;
 }
 
-rv::Result rv::Frame::End()
+rv::Result rv::Frame::End(bool& resized)
 {
-	VkPresentInfoKHR presentInfo{};
-	presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-
-	presentInfo.waitSemaphoreCount = 1;
-	presentInfo.pWaitSemaphores = &renderFinished.semaphore;
-	presentInfo.swapchainCount = 1;
-	presentInfo.pSwapchains = &swap->swap;
-	presentInfo.pImageIndices = &image;
-	return rv_try_vkr(vkQueuePresentKHR(swap->presentQueue.queue, &presentInfo));
+	return swap->Present(image, renderFinished, resized);
 }
 
 rv::Result rv::Frame::Create(Frame& frame, const Device& device, SwapChain& swap)

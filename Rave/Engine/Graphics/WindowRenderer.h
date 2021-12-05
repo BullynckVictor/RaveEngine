@@ -12,6 +12,7 @@ namespace rv
 	{
 	public:
 		WindowRenderer() = default;
+		~WindowRenderer();
 
 		static Result Create(
 			WindowRenderer& renderer, 
@@ -41,6 +42,9 @@ namespace rv
 		Window window;
 
 	private:
+		Result Resize();
+
+	private:
 		SwapChain swap;
 		RenderPass clearPass;
 		RenderPass colorPass;
@@ -50,6 +54,8 @@ namespace rv
 		FColor background;
 		std::vector<Frame> frames;
 		u32 nextFrame = 0;
+		SwapChainPreferences swapPreferences;
+		std::vector<DrawableData*> drawables;
 
 		friend class WindowRendererHelper;
 	};
