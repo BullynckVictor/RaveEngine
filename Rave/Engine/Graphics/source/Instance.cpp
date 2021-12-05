@@ -167,6 +167,8 @@ rv::Instance& rv::Instance::operator=(Instance&& rhs) noexcept
 
 rv::Result rv::Instance::Create(Instance& instance, const ApplicationInfo& app, const ValidationLayers& layers, const Extensions& extensions)
 {
+	instance.Release();
+
 	rv_result;
 
 	{

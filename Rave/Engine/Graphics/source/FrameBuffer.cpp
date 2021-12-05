@@ -43,6 +43,8 @@ void FillInfo(VkFramebufferCreateInfo& createInfo, const rv::RenderPass& pass, c
 
 rv::Result rv::FrameBuffer::Create(FrameBuffer& frame, const Device& device, const RenderPass& pass, const Extent2D& size, std::vector<VkImageView> views)
 {
+	frame.Release();
+
 	frame.device = &device;
 	VkFramebufferCreateInfo createInfo{};
 	FillInfo(createInfo, pass, size);
@@ -60,6 +62,8 @@ rv::Result rv::FrameBuffer::Create(FrameBuffer& frame, const Device& device, con
 
 rv::Result rv::FrameBuffer::Create(FrameBuffer& frame, const Device& device, const RenderPass& pass, const Extent2D& size, const ImageView& view)
 {
+	frame.Release();
+
 	frame.device = &device;
 	VkFramebufferCreateInfo createInfo{};
 	FillInfo(createInfo, pass, size);

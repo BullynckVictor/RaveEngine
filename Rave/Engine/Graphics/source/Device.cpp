@@ -45,8 +45,9 @@ rv::Result rv::Device::Create(
 	const DeviceRater& rater
 )
 {
-	rv_result;
+	device.Release();
 
+	rv_result;
 	rv_rif(PhysicalDevice::Create(device.physical, instance, requirements, rater));
 
 	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
@@ -130,6 +131,8 @@ rv::Result rv::PhysicalDevice::Create(
 	const DeviceRater& rater
 )
 {
+	device.Release();
+
 	rv_result;
 
 	std::vector<PhysicalDevice> devices;

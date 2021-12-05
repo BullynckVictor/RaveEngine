@@ -34,6 +34,8 @@ void rv::ImageView::Release()
 
 rv::Result rv::ImageView::Create(ImageView& view, const Device& device, VkImage image, VkFormat format)
 {
+	view.Release();
+
 	view.device = &device;
 	VkImageViewCreateInfo createInfo{};
 	createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;

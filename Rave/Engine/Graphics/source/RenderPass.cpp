@@ -28,6 +28,7 @@ rv::RenderPass& rv::RenderPass::operator=(RenderPass&& rhs) noexcept
 
 rv::Result rv::RenderPass::Create(RenderPass& pass, const Device& device, const RenderPassDescriptor& descriptor)
 {
+	pass.Release();
 	pass.device = &device;
 
 	std::vector<VkSubpassDescription> sub (descriptor.subpasses.size());

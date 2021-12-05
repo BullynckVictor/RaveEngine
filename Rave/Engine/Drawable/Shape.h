@@ -3,17 +3,22 @@
 
 namespace rv
 {
-	class Shape
+	struct ShapeData : public DrawableData
 	{
-	public:
-		void RecordCommand(CommandBuffer& command, u32 index);
-		
+		void RecordCommand(CommandBuffer& command, u32 index) const override;
+
 		static const PipelineLayoutDescriptor& GetLayout();
 		static bool Initialised();
-		static void SetPipeline(FullPipeline* pipeline);
 
-	private:
 		static FullPipeline* pipeline;
 		static PipelineLayoutDescriptor layout;
+	};
+
+	class Shape : public Drawable<ShapeData>
+	{
+	public:
+
+
+	private:
 	};
 }

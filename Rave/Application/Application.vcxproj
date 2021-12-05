@@ -98,9 +98,6 @@
   <ItemGroup>
     <Manifest Include=".manifest" />
   </ItemGroup>
-  <ItemGroup>
-    <Text Include="compile.txt" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

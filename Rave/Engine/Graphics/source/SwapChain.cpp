@@ -53,6 +53,7 @@ void rv::SwapChain::Release()
 
 rv::Result rv::SwapChain::Create(SwapChain& swap, const Device& device, Surface&& surface, const Extent2D& size, const SwapChainPreferences& preferences)
 {
+	swap.Release();
 	rv_result;
 
 	swap.device = &device;

@@ -7,18 +7,25 @@ namespace rv
 {
 	class WindowRendererHelper
 	{
-		template<DrawableConcept D>
-		static Result InitDrawable(WindowRenderer& renderer, D& drawable)
+		template<DrawableDataConcept D>
+		static Result InitDrawable(WindowRenderer& renderer, Drawable<D>& managed)
 		{
 			rv_result;
-
 			rif_assert(renderer.engine);
+
+			if (!managed.data)
+			{
+				managed.data = new D();
+				renderer.engine->graphics.AddDrawable(managed.data);
+			}
+
+			D& drawable = *managed.data;
 
 			if (!drawable.Initialised())
 			{
 				rv::FullPipeline* pipeline;
 				renderer.GetPipeline(pipeline, drawable.GetLayout());
-				drawable.SetPipeline(pipeline);
+				drawable.pipeline = pipeline;
 
 				for (size_t i = 0; i < renderer.drawCommands.size(); ++i)
 				{

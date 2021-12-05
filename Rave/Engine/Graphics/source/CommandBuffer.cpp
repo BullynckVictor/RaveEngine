@@ -33,6 +33,8 @@ void rv::CommandBuffer::Release()
 
 rv::Result rv::CommandBuffer::Create(CommandBuffer& buffer, const Device& device, const CommandPool& pool)
 {
+	buffer.Release();
+
 	buffer.device = &device;
 	VkCommandBufferAllocateInfo allocInfo{};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -44,6 +46,9 @@ rv::Result rv::CommandBuffer::Create(CommandBuffer& buffer, const Device& device
 
 rv::Result rv::CommandBuffer::Create(std::vector<std::reference_wrapper<CommandBuffer>> buffers, const Device& device, const CommandPool& pool)
 {
+	for (auto& buffer : buffers)
+		buffer.get().Release();
+
 	std::vector<VkCommandBuffer> cmd(buffers.size());
 
 	VkCommandBufferAllocateInfo allocInfo{};

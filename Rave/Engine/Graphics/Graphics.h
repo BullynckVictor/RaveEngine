@@ -8,6 +8,7 @@
 #include "Engine/Graphics/Shader.h"
 #include "Engine/Utility/File.h"
 #include "Engine/Graphics/Pipeline.h"
+#include "Engine/Drawable/Drawable.h"
 
 namespace rv
 {
@@ -34,12 +35,17 @@ namespace rv
 		Result AddShaderPath(const char* path);
 
 	private:
+		void AddDrawable(DrawableData* drawable);
+
+	private:
 		Instance instance;
 		rv_debug_only(DebugMessenger debug;);
 		Device device;
 
 		ShaderMap shaders;
 		std::vector<std::filesystem::path> shaderpaths;
+
+		std::vector<std::unique_ptr<DrawableData>> drawables;
 
 		friend class Engine;
 		friend class Renderer;

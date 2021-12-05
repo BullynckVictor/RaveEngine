@@ -44,6 +44,8 @@ void rv::Shader::Release()
 
 rv::Result rv::Shader::Create(Shader& shader, const Device& device, const char* filename, ShaderType type)
 {
+	shader.Release();
+
 	shader.device = &device;
 	rv_result;
 

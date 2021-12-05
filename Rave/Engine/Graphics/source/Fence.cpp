@@ -28,13 +28,16 @@ rv::Fence& rv::Fence::operator=(Fence&& rhs) noexcept
 
 void rv::Fence::Release()
 {
-	Wait();
+	if (fence)
+		Wait();
 	if (device)
 		release(fence, *device);
 }
 
 rv::Result rv::Fence::Create(Fence& fence, const Device& device, bool signaled)
 {
+	fence.Release();
+
 	fence.device = &device;
 	VkFenceCreateInfo createInfo{};
 	createInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;

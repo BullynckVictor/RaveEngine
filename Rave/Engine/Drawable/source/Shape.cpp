@@ -1,15 +1,15 @@
 #include "Engine/Drawable/Shape.h"
 
-rv::FullPipeline* rv::Shape::pipeline = nullptr;
-rv::PipelineLayoutDescriptor rv::Shape::layout;
+rv::FullPipeline* rv::ShapeData::pipeline = nullptr;
+rv::PipelineLayoutDescriptor rv::ShapeData::layout;
 
-void rv::Shape::RecordCommand(CommandBuffer& command, u32 index)
+void rv::ShapeData::RecordCommand(CommandBuffer& command, u32 index) const
 {
 	command.BindPipeline(pipeline->pipeline);
 	command.Draw(3);
 }
 
-const rv::PipelineLayoutDescriptor& rv::Shape::GetLayout()
+const rv::PipelineLayoutDescriptor& rv::ShapeData::GetLayout()
 {
 	if (!Initialised())
 	{
@@ -22,12 +22,7 @@ const rv::PipelineLayoutDescriptor& rv::Shape::GetLayout()
 	return layout;
 }
 
-bool rv::Shape::Initialised()
+bool rv::ShapeData::Initialised()
 {
 	return pipeline;
-}
-
-void rv::Shape::SetPipeline(FullPipeline* p)
-{
-	pipeline = p;
 }

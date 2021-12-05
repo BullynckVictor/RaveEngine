@@ -92,6 +92,7 @@ rv::PipelineLayout& rv::PipelineLayout::operator=(PipelineLayout&& rhs) noexcept
 
 rv::Result rv::PipelineLayout::Create(PipelineLayout& layout, const Device& device)
 {
+	layout.Release();
 	layout.device = &device;
 
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
@@ -196,6 +197,7 @@ rv::Pipeline& rv::Pipeline::operator=(Pipeline&& rhs) noexcept
 
 rv::Result rv::Pipeline::Create(Pipeline& pipeline, const Device& device, const PipelineLayout& layout)
 {
+	pipeline.Release();
 	pipeline.device = &device;
 	VkGraphicsPipelineCreateInfo pipelineInfo{};
 	FillCreateInfo(pipelineInfo, layout);
@@ -214,7 +216,10 @@ rv::Result rv::Pipeline::Create(const std::vector<std::reference_wrapper<Pipelin
 	rif_assert(pipelines.size() == layouts.size());
 
 	for (auto& p : pipelines)
+	{
+		p.get().Release();
 		p.get().device = &device;
+	}
 
 	std::vector<VkGraphicsPipelineCreateInfo> createInfo(layouts.size());
 	std::vector<VkPipeline> vkpipelines(pipelines.size());

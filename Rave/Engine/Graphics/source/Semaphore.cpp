@@ -34,6 +34,8 @@ void rv::Semaphore::Release()
 
 rv::Result rv::Semaphore::Create(Semaphore& semaphore, const Device& device)
 {
+	semaphore.Release();
+
 	semaphore.device = &device;
 	VkSemaphoreCreateInfo createInfo{};
 	createInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;

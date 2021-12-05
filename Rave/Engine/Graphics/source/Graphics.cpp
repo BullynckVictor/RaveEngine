@@ -117,3 +117,8 @@ rv::Result rv::Graphics::AddShaderPath(const char* path)
 		return failure;
 	return success;
 }
+
+void rv::Graphics::AddDrawable(DrawableData* drawable)
+{
+	drawables.emplace_back(drawable);
+}

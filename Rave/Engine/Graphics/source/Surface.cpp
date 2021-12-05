@@ -35,6 +35,7 @@ void rv::Surface::Release()
 
 rv::Result rv::Surface::Create(Surface& surface, const Instance& instance, const Window& window)
 {
+	surface.Release();
 	surface.instance = &instance;
 
 #	ifdef RV_PLATFORM_WINDOWS

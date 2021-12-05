@@ -34,6 +34,8 @@ void rv::CommandPool::Release()
 
 rv::Result rv::CommandPool::Create(CommandPool& pool, const Device& device, u32 family)
 {
+	pool.Release();
+
 	pool.device = &device;
 	VkCommandPoolCreateInfo createInfo{};
 	createInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;

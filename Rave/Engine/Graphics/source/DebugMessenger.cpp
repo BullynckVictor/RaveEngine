@@ -70,6 +70,8 @@ void rv::DebugMessenger::Release()
 
 rv::Result rv::DebugMessenger::Create(DebugMessenger& messenger, const Instance& instance, VkDebugUtilsMessageSeverityFlagsEXT severity)
 {
+	messenger.Release();
+
 	messenger.instance = &instance;
 
 	VkDebugUtilsMessengerCreateInfoEXT createInfo = CreateInfo();
@@ -101,7 +103,7 @@ void rv::DebugMessenger::Flush()
 void rv::DebugMessenger::StaticFlush()
 {
 	lastMessage.message.clear();
-	lastMessage.messageIDName = nullptr;
+	lastMessage.messageIDName.clear();
 	lastMessage.severity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT;
 }
 
