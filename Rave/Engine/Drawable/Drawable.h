@@ -1,5 +1,6 @@
 #pragma once
 #include "Engine/Graphics/CommandBuffer.h"
+#include "Engine/Graphics/VertexBuffer.h"
 
 namespace rv
 {
@@ -28,5 +29,6 @@ namespace rv
 		D* data = nullptr;
 
 		friend class WindowRendererHelper;
+		friend class WindowRenderer;
 	};
 }

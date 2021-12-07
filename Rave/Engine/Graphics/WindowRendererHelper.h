@@ -8,18 +8,23 @@ namespace rv
 	class WindowRendererHelper
 	{
 		template<DrawableDataConcept D>
-		static Result InitDrawable(WindowRenderer& renderer, Drawable<D>& managed)
+		static void Manage(WindowRenderer& renderer, Drawable<D>& managed)
 		{
-			rv_result;
-			rif_assert(renderer.engine);
-
 			if (!managed.data)
 			{
 				managed.data = new D();
 				renderer.engine->graphics.AddDrawable(managed.data);
 				renderer.drawables.push_back(managed.data);
 			}
+		}
 
+		template<DrawableDataConcept D>
+		static Result InitDrawable(WindowRenderer& renderer, Drawable<D>& managed)
+		{
+			rv_result;
+			rif_assert(renderer.engine);
+
+			Manage(renderer, managed);
 			D& drawable = *managed.data;
 
 			if (!drawable.Initialised())

@@ -150,7 +150,10 @@ void rv::Extensions::AddExtension(ExtensionType extension)
 
 rv::Instance::Instance(Instance&& rhs) noexcept
 	:
-	instance(move(rhs.instance))
+	instance(move(rhs.instance)),
+	app(std::move(rhs.app)),
+	layers(std::move(rhs.layers)),
+	extensions(std::move(rhs.extensions))
 {
 }
 
@@ -162,12 +165,19 @@ rv::Instance::~Instance()
 rv::Instance& rv::Instance::operator=(Instance&& rhs) noexcept
 {
 	instance = move(rhs.instance);
+	app = std::move(rhs.app);
+	layers = std::move(rhs.layers);
+	extensions = std::move(rhs.extensions);
 	return *this;
 }
 
 rv::Result rv::Instance::Create(Instance& instance, const ApplicationInfo& app, const ValidationLayers& layers, const Extensions& extensions)
 {
 	instance.Release();
+
+	instance.app = app;
+	instance.layers = layers;
+	instance.extensions = extensions;
 
 	rv_result;
 
@@ -206,5 +216,8 @@ rv::Result rv::Instance::Create(Instance& instance, const ApplicationInfo& app, 
 void rv::Instance::Release()
 {
 	release(instance);
+	app.info = {};
+	layers.layers.clear();
+	extensions.extensions.clear();
 }
 

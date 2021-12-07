@@ -60,6 +60,9 @@ rv::Result rv::Graphics::Create(Graphics& graphics, const GraphicsInfo& info)
 	rv_rif(Device::Create(graphics.device, graphics.instance, DefaultDeviceRequirements(surfaces)));
 	check_debug_static();
 
+	rv_rif(MemoryAllocator::Create(graphics.allocator, graphics.instance, graphics.device));
+	check_debug_static();
+
 	return result;
 }
 

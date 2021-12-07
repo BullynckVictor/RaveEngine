@@ -9,6 +9,7 @@
 #include "Engine/Utility/File.h"
 #include "Engine/Graphics/Pipeline.h"
 #include "Engine/Drawable/Drawable.h"
+#include "Engine/Graphics/MemoryAllocator.h"
 
 namespace rv
 {
@@ -41,6 +42,7 @@ namespace rv
 		Instance instance;
 		rv_debug_only(DebugMessenger debug;);
 		Device device;
+		MemoryAllocator allocator;
 
 		ShaderMap shaders;
 		std::vector<std::filesystem::path> shaderpaths;

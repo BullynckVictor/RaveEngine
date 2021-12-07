@@ -114,6 +114,8 @@ void rv::PipelineLayout::SetToDescriptor(const PipelineLayoutDescriptor& descrip
 	SetCullMode(descriptor.cullMode);
 	SetWinding(descriptor.clockwise);
 	SetBlending(descriptor.blending);
+	if (descriptor.vertex.attributes)
+		SetVertexType(descriptor.vertex);
 }
 
 void rv::PipelineLayout::SetTopology(VkPrimitiveTopology topology)
@@ -174,6 +176,14 @@ void rv::PipelineLayout::AddRenderPass(const RenderPass& pass, u32 subpass)
 {
 	this->pass = pass.pass;
 	this->subpass = subpass;
+}
+
+void rv::PipelineLayout::SetVertexType(const VertexDescriptor& vertex)
+{
+	vertexInput.pVertexAttributeDescriptions = vertex.attributes;
+	vertexInput.vertexAttributeDescriptionCount = (u32)vertex.nAttributes;
+	vertexInput.pVertexBindingDescriptions = &vertex.binding;
+	vertexInput.vertexBindingDescriptionCount = 1;
 }
 
 rv::Pipeline::Pipeline(Pipeline&& rhs) noexcept

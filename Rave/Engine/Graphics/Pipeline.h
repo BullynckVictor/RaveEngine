@@ -2,6 +2,7 @@
 #include "Engine/Graphics/Device.h"
 #include "Engine/Graphics/Shader.h"
 #include "Engine/Graphics/RenderPass.h"
+#include "Engine/Graphics/Vertex.h"
 #include <type_traits>
 
 namespace rv
@@ -18,8 +19,7 @@ namespace rv
 		bool clockwise = true;
 		bool blending = false;
 		std::vector<const char*> shaders;
-//		const char* renderpass = nullptr;
-//		u32 subpass = 0;
+		VertexDescriptor vertex;
 		size_t hash = 0;
 
 		size_t rehash();
@@ -49,6 +49,15 @@ namespace rv
 		void SetBlending(bool blend);
 		void AddShader(const Shader& shader);
 		void AddRenderPass(const RenderPass& pass, u32 subpass);
+		template<VertexConcept V>
+		void SetVertexType()
+		{
+			vertexInput.pVertexAttributeDescriptions = V::attributes.data();
+			vertexInput.vertexAttributeDescriptionCount = (u32)V::attributes.size();
+			vertexInput.pVertexBindingDescriptions = &V::binding;
+			vertexInput.vertexBindingDescriptionCount = 1;
+		}
+		void SetVertexType(const VertexDescriptor& vertex);
 
 		VkPipelineLayout layout = VK_NULL_HANDLE;
 		VkPipelineVertexInputStateCreateInfo vertexInput{};

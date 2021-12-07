@@ -86,16 +86,36 @@ rv::Result rv::WindowRenderer::AddPipeline(const PipelineLayoutDescriptor& layou
 	return GetPipeline(pipeline, layout);
 }
 
-rv::Result rv::WindowRenderer::CreateShape(Shape& shape)
+rv::Result rv::WindowRenderer::SetVSync(bool vsync)
+{
+	if (vsync != (swap.presentMode == VK_PRESENT_MODE_FIFO_KHR))
+	{
+		swapPreferences.presentMode = vsync ? VK_PRESENT_MODE_FIFO_KHR : VK_PRESENT_MODE_MAILBOX_KHR;
+		return Resize();
+	}
+	return success;
+}
+
+rv::Result rv::WindowRenderer::CreateShape(Shape& shape, const std::vector<Vertex2>& vertices)
 {
 	rv_result;
-	WindowRendererHelper::InitDrawable(*this, shape);
+	WindowRendererHelper::Manage(*this, shape);
+	rv_rif(ShapeData::Create(*shape.data, engine->graphics.allocator, vertices));
+	rv_rif(WindowRendererHelper::InitDrawable(*this, shape));
+	return result;
+}
+
+rv::Result rv::WindowRenderer::CreateShape(Shape& shape, std::vector<Vertex2>&& vertices)
+{
+	rv_result;
+	WindowRendererHelper::Manage(*this, shape);
+	rv_rif(ShapeData::Create(*shape.data, engine->graphics.allocator, std::move(vertices)));
+	rv_rif(WindowRendererHelper::InitDrawable(*this, shape));
 	return result;
 }
 
 rv::Result rv::WindowRenderer::Render()
 {
-
 	if (window.Minimized())
 		return success;
 	Result result;

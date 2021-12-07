@@ -183,6 +183,7 @@ namespace rv
 		PhysicalDevice physical;
 		Queue graphicsQueue;
 		Queue computeQueue;
+		Extensions extensions;
 	};
 
 	template<typename T>

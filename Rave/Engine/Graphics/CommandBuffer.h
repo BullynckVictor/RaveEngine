@@ -6,6 +6,7 @@
 #include "Engine/Graphics/Fence.h"
 #include "Engine/Graphics/Semaphore.h"
 #include "Engine/Utility/Color.h"
+#include "Engine/Graphics/VertexBuffer.h"
 
 namespace rv
 {
@@ -45,7 +46,7 @@ namespace rv
 		Result Begin() const;
 		Result End() const;
 		void StartRenderPass(
-			const RenderPass& pass, 
+			const RenderPass& pass,
 			const FrameBuffer& frame,
 			const Point& offset,
 			const Extent2D& size,
@@ -53,6 +54,7 @@ namespace rv
 		) const;
 		void EndRenderPass() const;
 		void BindPipeline(const Pipeline& pipeline) const;
+		void BindVertexBuffer(const VertexBuffer& vertices) const;
 		void Draw(u32 nVertices, u32 nInstances = 1, u32 vertexOffset = 0, u32 instanceOffset = 0) const;
 
 		Result Submit(const Fence* fence = nullptr) const;

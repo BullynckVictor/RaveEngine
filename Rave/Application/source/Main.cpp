@@ -13,7 +13,13 @@ rv::Result rave_main()
 	rv_rif(rv::WindowRenderer::Create(renderer, engine, "Hello World", 600, 370, rv::FColors::Silver, true, true));
 
 	rv::Shape triangle;
-	rv_rif(renderer.CreateShape(triangle));
+	rv_rif(renderer.CreateShape(triangle, {
+			{  0.0f, -0.5f },
+			{  0.5f,  0.5f },
+			{ -0.5f,  0.5f }
+	}));
+
+	bool vsync = true;
 
 	while (renderer.window.HandleMessages())
 	{

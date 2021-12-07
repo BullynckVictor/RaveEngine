@@ -35,9 +35,11 @@ namespace rv
 		Result GetPipeline(FullPipeline*& pipeline, const PipelineLayoutDescriptor& layout);
 		Result AddPipeline(const PipelineLayoutDescriptor& layout);
 
-		Result CreateShape(Shape& shape);
+		Result CreateShape(Shape& shape, const std::vector<Vertex2>& vertices);
+		Result CreateShape(Shape& shape, std::vector<Vertex2>&& vertices);
 
 		Result Render() override;
+		Result SetVSync(bool vsync);
 
 		Window window;
 

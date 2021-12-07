@@ -67,6 +67,9 @@ namespace rv
 		void Release();
 
 		VkInstance instance = VK_NULL_HANDLE;
+		ApplicationInfo app;
+		ValidationLayers layers;
+		Extensions extensions;
 	};
 
 	template<typename T>

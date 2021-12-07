@@ -108,6 +108,12 @@ void rv::CommandBuffer::BindPipeline(const Pipeline& pipeline) const
 	vkCmdBindPipeline(buffer, (VkPipelineBindPoint)pipeline.type, pipeline.pipeline);
 }
 
+void rv::CommandBuffer::BindVertexBuffer(const VertexBuffer& vertices) const
+{
+	u64 offset = 0;
+	vkCmdBindVertexBuffers(buffer, 0, 1, &vertices.buffer, &offset);
+}
+
 void rv::CommandBuffer::Draw(u32 nVertices, u32 nInstances, u32 vertexOffset, u32 instanceOffset) const
 {
 	vkCmdDraw(buffer, nVertices, nInstances, vertexOffset, instanceOffset);

@@ -68,8 +68,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>vulkan-1.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(VULKAN_SDK)\Lib\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>vulkan-1.lib;VulkanMemoryAllocator.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(VULKAN_SDK)\Lib\;$(ProjectDir)Libraries\VulkanMemoryAllocator\$(Configuration)_$(PlatformTarget)\</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -82,7 +82,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalIncludeDirectories>$(SolutionDir);$(VULKAN_SDK)\Include\</AdditionalIncludeDirectories>
-      <DisableSpecificWarnings>26812;6011</DisableSpecificWarnings>
+      <DisableSpecificWarnings>26812;6011;6387</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -91,8 +91,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>vulkan-1.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(VULKAN_SDK)\Lib\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>vulkan-1.lib;VulkanMemoryAllocator.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(VULKAN_SDK)\Lib\;$(ProjectDir)Libraries\VulkanMemoryAllocator\$(Configuration)_$(PlatformTarget)\</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -103,6 +103,8 @@
     <ClCompile Include="Core\source\Main.cpp" />
     <ClCompile Include="Core\source\Window.cpp" />
     <ClCompile Include="Drawable\source\Shape.cpp" />
+    <ClCompile Include="Graphics\source\Allocation.cpp" />
+    <ClCompile Include="Graphics\source\Buffer.cpp" />
     <ClCompile Include="Graphics\source\CommandBuffer.cpp" />
     <ClCompile Include="Graphics\source\CommandPool.cpp" />
     <ClCompile Include="Graphics\source\DebugMessenger.cpp" />
@@ -113,6 +115,7 @@
     <ClCompile Include="Graphics\source\Graphics.cpp" />
     <ClCompile Include="Graphics\source\ImageView.cpp" />
     <ClCompile Include="Graphics\source\Instance.cpp" />
+    <ClCompile Include="Graphics\source\MemoryAllocator.cpp" />
     <ClCompile Include="Graphics\source\Pipeline.cpp" />
     <ClCompile Include="Graphics\source\Renderer.cpp" />
     <ClCompile Include="Graphics\source\RenderPass.cpp" />
@@ -120,6 +123,7 @@
     <ClCompile Include="Graphics\source\Shader.cpp" />
     <ClCompile Include="Graphics\source\Surface.cpp" />
     <ClCompile Include="Graphics\source\SwapChain.cpp" />
+    <ClCompile Include="Graphics\source\VertexBuffer.cpp" />
     <ClCompile Include="Graphics\source\WindowRenderer.cpp" />
     <ClCompile Include="Utility\source\Error.cpp" />
     <ClCompile Include="Utility\source\Event.cpp" />
@@ -139,6 +143,8 @@
     <ClInclude Include="Core\Window.h" />
     <ClInclude Include="Drawable\Drawable.h" />
     <ClInclude Include="Drawable\Shape.h" />
+    <ClInclude Include="Graphics\Allocation.h" />
+    <ClInclude Include="Graphics\Buffer.h" />
     <ClInclude Include="Graphics\CommandBuffer.h" />
     <ClInclude Include="Graphics\CommandPool.h" />
     <ClInclude Include="Graphics\DebugMessenger.h" />
@@ -147,6 +153,7 @@
     <ClInclude Include="Graphics\Frame.h" />
     <ClInclude Include="Graphics\FrameBuffer.h" />
     <ClInclude Include="Graphics\Graphics.h" />
+    <ClInclude Include="Graphics\MemoryAllocator.h" />
     <ClInclude Include="Graphics\ImageView.h" />
     <ClInclude Include="Graphics\Instance.h" />
     <ClInclude Include="Graphics\Pipeline.h" />
@@ -155,6 +162,8 @@
     <ClInclude Include="Graphics\Semaphore.h" />
     <ClInclude Include="Graphics\Shader.h" />
     <ClInclude Include="Graphics\SwapChain.h" />
+    <ClInclude Include="Graphics\Vertex.h" />
+    <ClInclude Include="Graphics\VertexBuffer.h" />
     <ClInclude Include="Graphics\Vulkan.h" />
     <ClInclude Include="Graphics\WindowRenderer.h" />
     <ClInclude Include="Graphics\WindowRendererHelper.h" />

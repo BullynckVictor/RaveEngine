@@ -16,7 +16,8 @@ rv::Device::Device(Device&& rhs) noexcept
 	device(move(rhs.device)),
 	physical(std::move(rhs.physical)),
 	graphicsQueue(std::move(rhs.graphicsQueue)),
-	computeQueue(std::move(rhs.computeQueue))
+	computeQueue(std::move(rhs.computeQueue)),
+	extensions(std::move(rhs.extensions))
 {
 }
 
@@ -29,6 +30,9 @@ rv::Device& rv::Device::operator=(Device&& rhs) noexcept
 {
 	device = move(rhs.device);
 	physical = std::move(rhs.physical);
+	graphicsQueue = std::move(rhs.graphicsQueue);
+	computeQueue = std::move(rhs.computeQueue);
+	extensions = std::move(rhs.extensions);
 	return *this;
 }
 
@@ -36,6 +40,9 @@ void rv::Device::Release()
 {
 	physical.Release();
 	release(device);
+	graphicsQueue.Release();
+	computeQueue.Release();
+	extensions.extensions.clear();
 }
 
 rv::Result rv::Device::Create(
@@ -98,6 +105,8 @@ rv::Result rv::Device::Create(
 
 	device.graphicsQueue = device.GetQueue(graphicsFamilyGetter);
 	device.computeQueue = device.GetQueue(computeFamilyGetter);
+
+	device.extensions = requirements.extensions;
 
 	return result;
 }
