@@ -38,6 +38,7 @@ rv::Device& rv::Device::operator=(Device&& rhs) noexcept
 
 void rv::Device::Release()
 {
+	Wait();
 	physical.Release();
 	release(device);
 	graphicsQueue.Release();
@@ -57,6 +58,7 @@ rv::Result rv::Device::Create(
 	rv_result;
 	rv_rif(PhysicalDevice::Create(device.physical, instance, requirements, rater));
 
+	float queuePriority = 1.0f;
 	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
 
 	{
@@ -81,7 +83,6 @@ rv::Result rv::Device::Create(
 		size_t i = 0;
 		for (const auto& family : families)
 		{
-			float queuePriority = 1.0f;
 			queueCreateInfos[i].sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
 			queueCreateInfos[i].queueFamilyIndex = family;
 			queueCreateInfos[i].queueCount = 1;

@@ -139,13 +139,11 @@ rv::Result rv::SwapChain::NextImage(u32& image, bool& resized, const Semaphore* 
 {
 	resized = false;
 	VkResult vkr = vkAcquireNextImageKHR(device->device, swap, wait, semaphore ? semaphore->semaphore : nullptr, fence ? fence->fence : nullptr, &image);
-	if (vkr == VK_ERROR_OUT_OF_DATE_KHR)
+	if (vkr == VK_ERROR_OUT_OF_DATE_KHR || vkr == VK_SUBOPTIMAL_KHR)
 	{
 		resized = true;
 		return succeeded_vkr;
 	}
-	if (vkr == VK_SUBOPTIMAL_KHR)
-		return succeeded_vkr;
 	return rv_try_vkr(vkr);
 }
 

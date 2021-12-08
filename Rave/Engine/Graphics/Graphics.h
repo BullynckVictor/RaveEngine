@@ -10,6 +10,7 @@
 #include "Engine/Graphics/Pipeline.h"
 #include "Engine/Drawable/Drawable.h"
 #include "Engine/Graphics/MemoryAllocator.h"
+#include "Engine/Drawable/Shape.h"
 
 namespace rv
 {
@@ -35,6 +36,9 @@ namespace rv
 		Result CreateShader(const char* name, ShaderType type = RV_ST_NULL);
 		Result AddShaderPath(const char* path);
 
+		Result CreateShape(Shape& shape, const std::vector<Vertex2>& vertices);
+		Result CreateShape(Shape& shape, std::vector<Vertex2>&& vertices);
+
 	private:
 		void AddDrawable(DrawableData* drawable);
 
@@ -52,6 +56,6 @@ namespace rv
 		friend class Engine;
 		friend class Renderer;
 		friend class WindowRenderer;
-		friend class WindowRendererHelper;
+		friend class GraphicsHelper;
 	};
 }

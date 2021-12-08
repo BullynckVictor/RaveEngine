@@ -260,7 +260,7 @@
     <ClInclude Include="Drawable\Drawable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Graphics\WindowRendererHelper.h">
+    <ClInclude Include="Graphics\GraphicsHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Graphics\Semaphore.h">

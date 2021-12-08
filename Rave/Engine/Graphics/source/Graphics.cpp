@@ -1,4 +1,5 @@
 #include "Engine/Graphics/Graphics.h"
+#include "Engine/Graphics/GraphicsHelper.h"
 #include "Engine/Utility/Error.h"
 #include "Engine/Utility/String.h"
 #include "Engine/Utility/File.h"
@@ -119,6 +120,18 @@ rv::Result rv::Graphics::AddShaderPath(const char* path)
 	else
 		return failure;
 	return success;
+}
+
+rv::Result rv::Graphics::CreateShape(Shape& shape, const std::vector<Vertex2>& vertices)
+{
+	GraphicsHelper::Manage(*this, shape);
+	return Shape::Create(shape, allocator, vertices);
+}
+
+rv::Result rv::Graphics::CreateShape(Shape& shape, std::vector<Vertex2>&& vertices)
+{
+	GraphicsHelper::Manage(*this, shape);
+	return Shape::Create(shape, allocator, std::move(vertices));
 }
 
 void rv::Graphics::AddDrawable(DrawableData* drawable)

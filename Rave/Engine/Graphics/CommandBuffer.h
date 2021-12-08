@@ -55,6 +55,7 @@ namespace rv
 		void EndRenderPass() const;
 		void BindPipeline(const Pipeline& pipeline) const;
 		void BindVertexBuffer(const VertexBuffer& vertices) const;
+		void BindVertexBuffer(VkBuffer vertexBuffer) const;
 		void Draw(u32 nVertices, u32 nInstances = 1, u32 vertexOffset = 0, u32 instanceOffset = 0) const;
 
 		Result Submit(const Fence* fence = nullptr) const;

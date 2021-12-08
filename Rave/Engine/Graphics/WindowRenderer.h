@@ -5,6 +5,7 @@
 #include "Engine/Graphics/Frame.h"
 #include "Engine/Core/Window.h"
 #include "Engine/Drawable/Shape.h"
+#include <set>
 
 namespace rv
 {
@@ -41,10 +42,13 @@ namespace rv
 		Result Render() override;
 		Result SetVSync(bool vsync);
 
+		Result Wait() const;
+
 		Window window;
 
 	private:
 		Result Resize();
+		Result Record(const DrawableRecorder& recorder, CommandBuffer& draw, size_t index);
 
 	private:
 		SwapChain swap;
@@ -57,8 +61,9 @@ namespace rv
 		std::vector<Frame> frames;
 		u32 nextFrame = 0;
 		SwapChainPreferences swapPreferences;
-		std::vector<DrawableData*> drawables;
+		std::vector<DrawableRecorder> recorders;
+		std::set<size_t> initialisedDrawableTypes;
 
-		friend class WindowRendererHelper;
+		friend class GraphicsHelper;
 	};
 }

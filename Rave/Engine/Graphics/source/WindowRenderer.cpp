@@ -1,5 +1,5 @@
 #include "Engine/Graphics/WindowRenderer.h"
-#include "Engine/Graphics/WindowRendererHelper.h"
+#include "Engine/Graphics/GraphicsHelper.h"
 #include "Engine/Utility/Error.h"
 #include "Engine/Utility/String.h"
 #include "Engine/Core/Logger.h"
@@ -99,18 +99,16 @@ rv::Result rv::WindowRenderer::SetVSync(bool vsync)
 rv::Result rv::WindowRenderer::CreateShape(Shape& shape, const std::vector<Vertex2>& vertices)
 {
 	rv_result;
-	WindowRendererHelper::Manage(*this, shape);
-	rv_rif(ShapeData::Create(*shape.data, engine->graphics.allocator, vertices));
-	rv_rif(WindowRendererHelper::InitDrawable(*this, shape));
+	rv_rif(engine->graphics.CreateShape(shape, vertices));
+	rv_rif(GraphicsHelper::InitDrawable(*this, shape));
 	return result;
 }
 
 rv::Result rv::WindowRenderer::CreateShape(Shape& shape, std::vector<Vertex2>&& vertices)
 {
 	rv_result;
-	WindowRendererHelper::Manage(*this, shape);
-	rv_rif(ShapeData::Create(*shape.data, engine->graphics.allocator, std::move(vertices)));
-	rv_rif(WindowRendererHelper::InitDrawable(*this, shape));
+	rv_rif(engine->graphics.CreateShape(shape, std::move(vertices)));
+	rv_rif(GraphicsHelper::InitDrawable(*this, shape));
 	return result;
 }
 
@@ -146,6 +144,7 @@ rv::Result rv::WindowRenderer::Render()
 	if (!drawCommands.empty())
 		frames[currentFrame].RenderLast(drawCommands[image].back());
 	Result r = frames[currentFrame].End(resized);
+	check_debug();
 	if (resized)
 		return Resize();
 	if (r.severity() > result.severity())
@@ -153,9 +152,15 @@ rv::Result rv::WindowRenderer::Render()
 	return result;
 }
 
+rv::Result rv::WindowRenderer::Wait() const
+{
+	return Frame::Wait(engine->graphics.device, frames);
+}
+
 rv::Result rv::WindowRenderer::Resize()
 {
 	rv_result;
+	rv_rif(Wait());
 
 	VkFormat oldFormat = swap.format.format;
 	bool resized = swap.swap;
@@ -205,17 +210,24 @@ rv::Result rv::WindowRenderer::Resize()
 		rv_rif(Pipeline::Create(pipeline.second.pipeline, engine->graphics.device, pipeline.second.layout));
 	}
 
-	size_t size = drawCommands[0].size();
-	for (size_t i = 1; i < size; ++i)
-		for (size_t j = 0; j < drawCommands.size(); ++j)
+	for (const auto& recorder : recorders)
+	{
+		for (size_t i = 0; i < drawCommands.size(); ++i)
 		{
-			CommandBuffer& draw = drawCommands[j][i];
-			rv_rif(draw.Begin());
-			draw.StartRenderPass(colorPass, frameBuffers[j], 0, window.Size());
-			drawables[i - 1]->RecordCommand(draw, (u32)j);
-			draw.EndRenderPass();
-			rv_rif(draw.End());
+			CommandBuffer& draw = drawCommands[i][recorder.commandIndex];
+			rv_rif(Record(recorder, draw, i));
 		}
-
+	}
 	return result;
+}
+
+rv::Result rv::WindowRenderer::Record(const DrawableRecorder& recorder, CommandBuffer& draw, size_t index)
+{
+	rv_result;
+	rv_rif(draw.Begin());
+	draw.StartRenderPass(colorPass, frameBuffers[index], 0, window.Size());
+	draw.BindPipeline(recorder.pipeline->pipeline);
+	recorder.recordFunction(draw, *recorder.data);
+	draw.EndRenderPass();
+	return draw.End();
 }

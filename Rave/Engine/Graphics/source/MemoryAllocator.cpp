@@ -1,3 +1,4 @@
+#define VMA_IMPLEMENTATION
 #include "Engine/Graphics/MemoryAllocator.h"
 #include "Engine/Utility/Error.h"
 

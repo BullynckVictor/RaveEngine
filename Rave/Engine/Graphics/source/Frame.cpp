@@ -58,6 +58,25 @@ rv::Result rv::Frame::End(bool& resized)
 	return swap->Present(image, renderFinished, resized);
 }
 
+rv::Result rv::Frame::Wait() const
+{
+	return inFlight.Wait();
+}
+
+rv::Result rv::Frame::Wait(const Device& device, const std::vector<std::reference_wrapper<const Frame>>& frames)
+{
+	std::vector<VkFence> fences(frames.size());
+	std::transform(frames.begin(), frames.end(), fences.begin(), [](const Frame& frame) { return frame.inFlight.fence; });
+	return Fence::Wait(device, fences);
+}
+
+rv::Result rv::Frame::Wait(const Device& device, const std::vector<Frame>& frames)
+{
+	std::vector<VkFence> fences(frames.size());
+	std::transform(frames.begin(), frames.end(), fences.begin(), [](const Frame& frame) { return frame.inFlight.fence; });
+	return Fence::Wait(device, fences);
+}
+
 rv::Result rv::Frame::Create(Frame& frame, const Device& device, SwapChain& swap)
 {
 	rv_result;

@@ -182,7 +182,7 @@ void rv::PipelineLayout::SetVertexType(const VertexDescriptor& vertex)
 {
 	vertexInput.pVertexAttributeDescriptions = vertex.attributes;
 	vertexInput.vertexAttributeDescriptionCount = (u32)vertex.nAttributes;
-	vertexInput.pVertexBindingDescriptions = &vertex.binding;
+	vertexInput.pVertexBindingDescriptions = vertex.binding;
 	vertexInput.vertexBindingDescriptionCount = 1;
 }
 
@@ -306,9 +306,11 @@ void rv::FullPipeline::Release()
 	layout.Release();
 }
 
+#include <iostream>
+
 rv::Result rv::FullPipeline::Create(FullPipeline& pipeline, const Device& device)
 {
 	rv_result;
 	rv_rif(PipelineLayout::Create(pipeline.layout, device));
-	return Pipeline::Create(pipeline.pipeline, device, pipeline.layout);	
+	return Pipeline::Create(pipeline.pipeline, device, pipeline.layout);
 }

@@ -23,8 +23,8 @@ rv::Result rave_main()
 
 	while (renderer.window.HandleMessages())
 	{
-		renderer.Render();
+		rv_rif(renderer.Render());
 	}
 
-	return result;
+	return renderer.Wait();
 }

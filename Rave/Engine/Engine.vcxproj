@@ -68,7 +68,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>vulkan-1.lib;VulkanMemoryAllocator.lib</AdditionalDependencies>
+      <AdditionalDependencies>vulkan-1.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(VULKAN_SDK)\Lib\;$(ProjectDir)Libraries\VulkanMemoryAllocator\$(Configuration)_$(PlatformTarget)\</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -91,7 +91,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>vulkan-1.lib;VulkanMemoryAllocator.lib</AdditionalDependencies>
+      <AdditionalDependencies>vulkan-1.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(VULKAN_SDK)\Lib\;$(ProjectDir)Libraries\VulkanMemoryAllocator\$(Configuration)_$(PlatformTarget)\</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -166,7 +166,7 @@
     <ClInclude Include="Graphics\VertexBuffer.h" />
     <ClInclude Include="Graphics\Vulkan.h" />
     <ClInclude Include="Graphics\WindowRenderer.h" />
-    <ClInclude Include="Graphics\WindowRendererHelper.h" />
+    <ClInclude Include="Graphics\GraphicsHelper.h" />
     <ClInclude Include="Include.h" />
     <ClInclude Include="Utility\Color.h" />
     <ClInclude Include="Utility\Event.h" />

@@ -186,12 +186,12 @@ namespace rv
 		template<VertexConcept V>
 		void Set()
 		{
-			binding = V::binding;
+			binding = &V::binding;
 			attributes = V::attributes.data();
 			nAttributes = V::attributes.size();
 		}
 
-		VkVertexInputBindingDescription binding;
+		const VkVertexInputBindingDescription* binding = nullptr;
 		const VkVertexInputAttributeDescription* attributes = nullptr;
 		size_t nAttributes = 0;
 	};

@@ -46,7 +46,7 @@ rv::Result rv::Fence::Create(Fence& fence, const Device& device, bool signaled)
 	return rv_try_vkr(vkCreateFence(device.device, &createInfo, nullptr, &fence.fence));
 }
 
-rv::Result rv::Fence::Wait(bool waitAll, u64 timeout)
+rv::Result rv::Fence::Wait(bool waitAll, u64 timeout) const
 {
 	return rv_try_vkr(vkWaitForFences(device->device, 1, &fence, waitAll, timeout));
 }
@@ -69,6 +69,14 @@ rv::Result rv::Fence::Wait(std::vector<std::reference_wrapper<const Fence>> fenc
 	);
 	rif_assert_info(device, "Not all Devices are the same");
 	return rv_try_vkr(vkWaitForFences(device, (u32)fens.size(), fens.data(), waitAll, timeout));
+}
+
+rv::Result rv::Fence::Wait(const Device& device, std::vector<VkFence> fences, bool waitAll, u64 timeout)
+{
+	if (fences.empty())
+		return success;
+
+	return rv_try_vkr(vkWaitForFences(device.device, (u32)fences.size(), fences.data(), waitAll, timeout));
 }
 
 rv::Result rv::Fence::Reset()

@@ -1,50 +1,31 @@
 #include "Engine/Drawable/Shape.h"
+#include "Engine/Core/Logger.h"
 
-rv::FullPipeline* rv::ShapeData::pipeline = nullptr;
-rv::PipelineLayoutDescriptor rv::ShapeData::layout;
-
-void rv::ShapeData::RecordCommand(CommandBuffer& command, u32 index) const
+rv::Result rv::Shape::Create(Shape& shape, const MemoryAllocator& allocator, const std::vector<Vertex2>& vertices)
 {
-	command.BindPipeline(pipeline->pipeline);
-	command.BindVertexBuffer(vertices);
-	command.Draw(vertices.Size());
+	return MappedVertexBuffer<Vertex2>::Create(shape.data->vertices, allocator, vertices);
 }
 
-const rv::PipelineLayoutDescriptor& rv::ShapeData::GetLayout()
+rv::Result rv::Shape::Create(Shape& shape, const MemoryAllocator& allocator, std::vector<Vertex2>&& vertices)
 {
-	if (!Initialised())
-	{
-		layout.shaders = {
-			"triangle.vert",
-			"triangle.frag"
-		};
-		layout.vertex.Set<Vertex2>();
-		layout.rehash();
-	}
-	return layout;
+	return MappedVertexBuffer<Vertex2>::Create(shape.data->vertices, allocator, std::move(vertices));
 }
 
-bool rv::ShapeData::Initialised()
+void rv::Shape::RecordCommand(CommandBuffer& draw, const DrawableData& data)
 {
-	return pipeline;
+	const ShapeData& shape = reinterpret_cast<const ShapeData&>(data);
+	draw.BindVertexBuffer(shape.vertices);
+	draw.Draw(shape.vertices.Size());
+	rv_log("Recording");
 }
 
-rv::Result rv::ShapeData::Create(ShapeData& shape, const MemoryAllocator& allocator, const std::vector<Vertex2>& vertices)
+void rv::Shape::DescribePipeline(PipelineLayoutDescriptor& layout, size_t index)
 {
-	return MappedVertexBuffer<Vertex2>::Create(shape.vertices, allocator, vertices);
-}
-
-rv::Result rv::ShapeData::Create(ShapeData& shape, const MemoryAllocator& allocator, std::vector<Vertex2>&& vertices)
-{
-	return MappedVertexBuffer<Vertex2>::Create(shape.vertices, allocator, std::move(vertices));
-}
-
-rv::MappedVertexBuffer<rv::Vertex2>& rv::Shape::Vertices()
-{
-	return data->vertices;
-}
-
-const rv::MappedVertexBuffer<rv::Vertex2>& rv::Shape::Vertices() const
-{
-	return data->vertices;
+	layout.shaders = {
+		"triangle.vert",
+		"triangle.frag"
+	};
+	layout.cullMode = VK_CULL_MODE_NONE;
+	layout.vertex.Set<Vertex2>();
+	rv_log("Describing");
 }

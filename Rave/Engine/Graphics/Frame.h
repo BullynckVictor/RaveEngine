@@ -17,6 +17,10 @@ namespace rv
 		Result RenderLast(const CommandBuffer& drawCommand);
 		Result End(bool& resized);
 
+		Result Wait() const;
+		static Result Wait(const Device& device, const std::vector<std::reference_wrapper<const Frame>>& frames);
+		static Result Wait(const Device& device, const std::vector<Frame>& frames);
+
 		static Result Create(Frame& frame, const Device& device, SwapChain& swap);
 
 		u64 timeout = std::numeric_limits<u64>::max();

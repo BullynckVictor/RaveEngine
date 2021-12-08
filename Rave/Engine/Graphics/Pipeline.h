@@ -13,6 +13,7 @@ namespace rv
 
 		operator size_t () const;
 
+		size_t hash = 0;
 		VkPrimitiveTopology topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
 		float lineWidth = 1.0f;
 		VkCullModeFlags cullMode = VK_CULL_MODE_BACK_BIT;
@@ -20,7 +21,6 @@ namespace rv
 		bool blending = false;
 		std::vector<const char*> shaders;
 		VertexDescriptor vertex;
-		size_t hash = 0;
 
 		size_t rehash();
 	};

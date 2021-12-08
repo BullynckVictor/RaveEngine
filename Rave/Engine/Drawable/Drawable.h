@@ -7,19 +7,19 @@ namespace rv
 	struct DrawableData
 	{
 		virtual ~DrawableData() = default;
-
-		virtual void RecordCommand(CommandBuffer& command, u32 index) const {}
 	};
 
-	template<typename T>
-	concept DrawableDataConcept = std::is_base_of_v<DrawableData, T> && requires(T drawable, CommandBuffer cmd, u32 i)
+	typedef void(*DrawableRecordFunction)(CommandBuffer&, const DrawableData&);
+
+	struct DrawableRecorder
 	{
-		drawable.RecordCommand(cmd, i);
-		drawable.Initialised();
-		drawable.pipeline;
+		DrawableRecordFunction recordFunction = nullptr;
+		const FullPipeline* pipeline = nullptr;
+		DrawableData* data = nullptr;
+		size_t commandIndex = 0;
 	};
 
-	template<DrawableDataConcept D>
+	template<typename D>
 	class Drawable
 	{
 	public:
@@ -28,7 +28,16 @@ namespace rv
 	protected:
 		D* data = nullptr;
 
-		friend class WindowRendererHelper;
 		friend class WindowRenderer;
+		friend class Graphics;
+		friend class GraphicsHelper;
+	};
+
+	template<typename D>
+	concept DrawableConcept = requires(D drawable, CommandBuffer command, const DrawableData data, PipelineLayoutDescriptor layout, size_t index)
+	{
+		drawable.RecordCommand(command, data);
+		drawable.DescribePipeline(layout, index);
+		D::nPipelines;
 	};
 }

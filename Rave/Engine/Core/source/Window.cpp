@@ -18,6 +18,7 @@ rv::Result rv::win32::WindowClass::Create(WindowClass& window, const std::string
 	window.classex.hInstance = window.instance;
 	window.classex.lpszClassName = window.name.c_str();
 	window.classex.lpfnWndProc = procedure;
+	window.classex.hCursor = LoadCursor(NULL, IDC_ARROW);
 
 	rif_win32_check(RegisterClassEx(&window.classex));
 

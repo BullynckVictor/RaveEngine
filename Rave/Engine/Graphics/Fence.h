@@ -17,8 +17,9 @@ namespace rv
 
 		static Result Create(Fence& fence, const Device& device, bool signaled = false);
 
-		Result Wait(bool waitAll = true, u64 timeout = std::numeric_limits<u64>::max());
+		Result Wait(bool waitAll = true, u64 timeout = std::numeric_limits<u64>::max()) const;
 		static Result Wait(std::vector<std::reference_wrapper<const Fence>> fences, bool waitAll = true, u64 timeout = std::numeric_limits<u64>::max());
+		static Result Wait(const Device& device, std::vector<VkFence> fences, bool waitAll = true, u64 timeout = std::numeric_limits<u64>::max());
 
 		Result Reset();
 		static Result Wait(std::vector<std::reference_wrapper<const Fence>> fences);
