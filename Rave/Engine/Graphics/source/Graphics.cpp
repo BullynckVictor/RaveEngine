@@ -64,6 +64,9 @@ rv::Result rv::Graphics::Create(Graphics& graphics, const GraphicsInfo& info)
 	rv_rif(MemoryAllocator::Create(graphics.allocator, graphics.instance, graphics.device));
 	check_debug_static();
 
+	rv_rif(StagingBufferManager::Create(graphics.manager, graphics.device, graphics.allocator, graphics.device.computeQueue));
+	check_debug_static();
+
 	return result;
 }
 
@@ -122,16 +125,16 @@ rv::Result rv::Graphics::AddShaderPath(const char* path)
 	return success;
 }
 
-rv::Result rv::Graphics::CreateShape(Shape& shape, const std::vector<Vertex2>& vertices)
+rv::Result rv::Graphics::CreateShape(Shape& shape, const HeapBuffer<Vertex2>& vertices, const HeapBuffer<u16>& indices)
 {
 	GraphicsHelper::Manage(*this, shape);
-	return Shape::Create(shape, allocator, vertices);
+	return Shape::Create(shape, manager, vertices, indices);
 }
 
-rv::Result rv::Graphics::CreateShape(Shape& shape, std::vector<Vertex2>&& vertices)
+rv::Result rv::Graphics::CreateShape(Shape& shape, HeapBuffer<Vertex2>&& vertices, HeapBuffer<u16>&& indices)
 {
 	GraphicsHelper::Manage(*this, shape);
-	return Shape::Create(shape, allocator, std::move(vertices));
+	return Shape::Create(shape, manager, std::move(vertices), indices);
 }
 
 void rv::Graphics::AddDrawable(DrawableData* drawable)

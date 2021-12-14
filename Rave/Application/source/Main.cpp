@@ -14,10 +14,14 @@ rv::Result rave_main()
 
 	rv::Shape triangle;
 	rv_rif(renderer.CreateShape(triangle, {
-			{  0.0f, -0.5f },
-			{  0.5f,  0.5f },
-			{ -0.5f,  0.5f }
-	}));
+			{ -0.25f, -0.5f },
+			{  0.50f,  0.5f },
+			{ -0.50f,  0.5f },
+			{  0.75f, -0.5f }
+	}, {{ 
+			0, 1, 2,
+			0, 3, 1
+	}}));
 
 	bool vsync = true;
 

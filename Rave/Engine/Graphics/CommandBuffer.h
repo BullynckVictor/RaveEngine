@@ -7,6 +7,7 @@
 #include "Engine/Graphics/Semaphore.h"
 #include "Engine/Utility/Color.h"
 #include "Engine/Graphics/VertexBuffer.h"
+#include "Engine/Graphics/IndexBuffer.h"
 
 namespace rv
 {
@@ -43,7 +44,7 @@ namespace rv
 		static Result Create(CommandBuffer& buffer, const Device& device, const CommandPool& pool);
 		static Result Create(std::vector<std::reference_wrapper<CommandBuffer>> buffers, const Device& device, const CommandPool& pool);
 
-		Result Begin() const;
+		Result Begin(bool once = false) const;
 		Result End() const;
 		void StartRenderPass(
 			const RenderPass& pass,
@@ -55,8 +56,11 @@ namespace rv
 		void EndRenderPass() const;
 		void BindPipeline(const Pipeline& pipeline) const;
 		void BindVertexBuffer(const VertexBuffer& vertices) const;
-		void BindVertexBuffer(VkBuffer vertexBuffer) const;
+		void BindIndexBuffer(const IndexBuffer& indices) const;
 		void Draw(u32 nVertices, u32 nInstances = 1, u32 vertexOffset = 0, u32 instanceOffset = 0) const;
+		void DrawIndexed(u32 nIndices, u32 nInstances = 1, u32 vertexOffset = 0, u32 indexOffset = 0, u32 instanceOffset = 0) const;
+
+		void CopyBuffers(const Buffer& source, const Buffer& dest, u64 size, u64 srcOffset = 0, u64 destOffset = 0);
 
 		Result Submit(const Fence* fence = nullptr) const;
 		Result Submit(const Queue& queue, const Fence* fence = nullptr) const;

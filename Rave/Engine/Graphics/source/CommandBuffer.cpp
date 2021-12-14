@@ -71,10 +71,11 @@ rv::Result rv::CommandBuffer::Create(std::vector<std::reference_wrapper<CommandB
 	return result;
 }
 
-rv::Result rv::CommandBuffer::Begin() const
+rv::Result rv::CommandBuffer::Begin(bool once) const
 {
 	VkCommandBufferBeginInfo beginInfo{};
 	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	beginInfo.flags = once ? VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT : 0;
 	return rv_try_vkr(vkBeginCommandBuffer(buffer, &beginInfo));
 }
 
@@ -114,15 +115,28 @@ void rv::CommandBuffer::BindVertexBuffer(const VertexBuffer& vertices) const
 	vkCmdBindVertexBuffers(buffer, 0, 1, &vertices.buffer, &offset);
 }
 
-void rv::CommandBuffer::BindVertexBuffer(VkBuffer vertexBuffer) const
+void rv::CommandBuffer::BindIndexBuffer(const IndexBuffer& indices) const
 {
-	u64 offset = 0;
-	vkCmdBindVertexBuffers(buffer, 0, 1, &vertexBuffer, &offset);
+	vkCmdBindIndexBuffer(buffer, indices.buffer, 0, indices.type);
 }
 
 void rv::CommandBuffer::Draw(u32 nVertices, u32 nInstances, u32 vertexOffset, u32 instanceOffset) const
 {
 	vkCmdDraw(buffer, nVertices, nInstances, vertexOffset, instanceOffset);
+}
+
+void rv::CommandBuffer::DrawIndexed(u32 nIndices, u32 nInstances, u32 vertexOffset, u32 indexOffset, u32 instanceOffset) const
+{
+	vkCmdDrawIndexed(buffer, nIndices, nInstances, indexOffset, vertexOffset, instanceOffset);
+}
+
+void rv::CommandBuffer::CopyBuffers(const Buffer& source, const Buffer& dest, u64 size, u64 srcOffset, u64 destOffFset)
+{
+	VkBufferCopy copyRegion{};
+	copyRegion.srcOffset = srcOffset; // Optional
+	copyRegion.dstOffset = destOffFset; // Optional
+	copyRegion.size = size;
+	vkCmdCopyBuffer(buffer, source.buffer, dest.buffer, 1, &copyRegion);
 }
 
 rv::Result rv::CommandBuffer::Submit(const Fence* fence) const

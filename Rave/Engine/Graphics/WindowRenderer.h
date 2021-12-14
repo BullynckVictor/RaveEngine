@@ -25,9 +25,9 @@ namespace rv
 		static Result Create(
 			WindowRenderer& renderer,
 			Engine& engine,
-			const std::string& title, 
-			uint width, 
-			uint height, 
+			const std::string& title,
+			uint width,
+			uint height,
 			const FColor& background = FColors::White,
 			bool vsync = true, 
 			bool resize = false
@@ -36,8 +36,8 @@ namespace rv
 		Result GetPipeline(FullPipeline*& pipeline, const PipelineLayoutDescriptor& layout);
 		Result AddPipeline(const PipelineLayoutDescriptor& layout);
 
-		Result CreateShape(Shape& shape, const std::vector<Vertex2>& vertices);
-		Result CreateShape(Shape& shape, std::vector<Vertex2>&& vertices);
+		Result CreateShape(Shape& shape, const HeapBuffer<Vertex2>& vertices, const HeapBuffer<u16>& indices);
+		Result CreateShape(Shape& shape, HeapBuffer<Vertex2>&& vertices, HeapBuffer<u16>&& indices);
 
 		Result Render() override;
 		Result SetVSync(bool vsync);

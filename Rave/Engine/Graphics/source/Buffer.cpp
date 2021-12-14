@@ -1,4 +1,5 @@
 #include "Engine/Graphics/Buffer.h"
+#include "Engine/Graphics/StagingBuffer.h"
 #include "Engine/Utility/Error.h"
 
 rv::Buffer::Buffer(Buffer&& rhs) noexcept
@@ -54,14 +55,33 @@ rv::Result rv::Buffer::Create(Buffer& buffer, const MemoryAllocator& allocator, 
 	return rv_try_vkr(vmaCreateBuffer(allocator.allocator, &createInfo, &allocation, &buffer.buffer, &buffer.allocation.allocation, nullptr));
 }
 
-rv::Result rv::Buffer::Create(Buffer& buffer, const MemoryAllocator& allocator, void* data, u64 size, VkBufferUsageFlags bufferUsage, VmaMemoryUsage memoryUsage)
+rv::Result rv::Buffer::Create(Buffer& buffer, const MemoryAllocator& allocator, const void* data, u64 size, VkBufferUsageFlags bufferUsage, VmaMemoryUsage memoryUsage)
 {
 	rv_result;
 	rv_rif(Create(buffer, allocator, size, bufferUsage, memoryUsage));
-	return buffer.Map(data, size);
+	if (data)
+		return buffer.Map(data, size);
+	return success;
 }
 
-rv::Result rv::Buffer::Map(void* data, u64 size)
+rv::Result rv::Buffer::Create(Buffer& buffer, const StagingBufferManager& manager, const void* data, u64 size, VkBufferUsageFlags bufferUsage, VmaMemoryUsage memoryUsage)
+{
+	rv_result;
+	rv_rif(Create(buffer, *manager.allocator, size, bufferUsage | VK_BUFFER_USAGE_TRANSFER_DST_BIT, memoryUsage));
+	StagingBuffer staging;
+	rv_rif(StagingBuffer::Create(staging, manager, buffer, data, size, true));
+	return staging.Copy();
+}
+
+rv::Result rv::Buffer::Create(Buffer& buffer, StagingBuffer& staging, const StagingBufferManager& manager, const void* data, u64 size, VkBufferUsageFlags bufferUsage, VmaMemoryUsage memoryUsage)
+{
+	rv_result;
+	rv_rif(Create(buffer, *manager.allocator, size, bufferUsage | VK_BUFFER_USAGE_TRANSFER_DST_BIT, memoryUsage));
+	rv_rif(StagingBuffer::Create(staging, manager, buffer, data, size, false));
+	return staging.Copy();
+}
+
+rv::Result rv::Buffer::Map(const void* data, u64 size) const
 {
 	rv_result;
 	rif_assert(data);

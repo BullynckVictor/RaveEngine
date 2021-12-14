@@ -96,25 +96,25 @@ rv::Result rv::WindowRenderer::SetVSync(bool vsync)
 	return success;
 }
 
-rv::Result rv::WindowRenderer::CreateShape(Shape& shape, const std::vector<Vertex2>& vertices)
+rv::Result rv::WindowRenderer::CreateShape(Shape& shape, const HeapBuffer<Vertex2>& vertices, const HeapBuffer<u16>& indices)
 {
 	rv_result;
-	rv_rif(engine->graphics.CreateShape(shape, vertices));
+	rv_rif(engine->graphics.CreateShape(shape, vertices, indices));
 	rv_rif(GraphicsHelper::InitDrawable(*this, shape));
 	return result;
 }
 
-rv::Result rv::WindowRenderer::CreateShape(Shape& shape, std::vector<Vertex2>&& vertices)
+rv::Result rv::WindowRenderer::CreateShape(Shape& shape, HeapBuffer<Vertex2>&& vertices, HeapBuffer<u16>&& indices)
 {
 	rv_result;
-	rv_rif(engine->graphics.CreateShape(shape, std::move(vertices)));
+	rv_rif(engine->graphics.CreateShape(shape, std::move(vertices), std::move(indices)));
 	rv_rif(GraphicsHelper::InitDrawable(*this, shape));
 	return result;
 }
 
 rv::Result rv::WindowRenderer::Render()
 {
-	if (window.Minimized())
+	if (window.Minimized() || window.Size().height <= 0)
 		return success;
 	Result result;
 
@@ -159,6 +159,9 @@ rv::Result rv::WindowRenderer::Wait() const
 
 rv::Result rv::WindowRenderer::Resize()
 {
+	if (window.Size().height <= 0)
+		return success;
+
 	rv_result;
 	rv_rif(Wait());
 

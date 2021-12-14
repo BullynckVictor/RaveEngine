@@ -7,11 +7,32 @@ namespace rv
 	{
 	public:
 		HeapBuffer() : m_data(nullptr), m_size(0) {}
+		HeapBuffer(std::initializer_list<T> initial) : m_data(new T[initial.size()]), m_size(initial.size()) { std::copy(initial.begin(), initial.end(), begin()); }
 		HeapBuffer(size_t size) : m_data(new T[size]), m_size(size) {}
 		HeapBuffer(const T* begin, const T* end) : m_data((end - begin > 0) ? new T[end - begin] : nullptr), m_size(end - begin) {}
 		HeapBuffer(const HeapBuffer& rhs) : m_data((rhs.size() > 0) ? new T[rhs.size()] : nullptr), m_size(rhs.size()) {}
 		HeapBuffer(HeapBuffer&& rhs) noexcept : m_data(rhs.data()), m_size(rhs.size) { rhs.m_data = nullptr, rhs.m_size = 0; }
 		~HeapBuffer() { clear(); }
+
+		HeapBuffer& operator= (const HeapBuffer& rhs) 
+		{
+			if (size() != rhs.size())
+			{
+				clear();
+				m_data = new T[rhs.size()];
+				m_size = rhs.size();
+			}
+			std::copy(rhs.begin(), rhs.end(), begin());
+			return *this;
+		}
+		HeapBuffer& operator= (HeapBuffer&& rhs)
+		{
+			m_data = rhs.m_data;
+			m_size = rhs.m_size;
+			rhs.m_data = nullptr;
+			rhs.m_size = 0;
+			return *this;
+		}
 
 		size_t size() const { return m_size; }
 
@@ -35,7 +56,7 @@ namespace rv
 		const	T* rend()		const	{ return data() - 1; }
 		const	T* crend()		const	{ return data() - 1; }
 
-		void clear() { if (m_data) delete[] m_data; }
+		void clear() { if (m_data) delete[] m_data; m_data = nullptr; }
 		bool empty() const { return m_size; }
 
 	private:

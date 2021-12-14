@@ -1,8 +1,12 @@
 #pragma once
 #include "Engine/Graphics/Allocation.h"
+#include "Engine/Graphics/CommandPool.h"
 
 namespace rv
 {
+	struct StagingBufferManager;
+	struct StagingBuffer;
+
 	struct Buffer
 	{
 		Buffer() = default;
@@ -16,9 +20,12 @@ namespace rv
 		void Release();
 
 		static Result Create(Buffer& buffer, const MemoryAllocator& allocator, u64 size, VkBufferUsageFlags bufferUsage, VmaMemoryUsage memoryUsage);
-		static Result Create(Buffer& buffer, const MemoryAllocator& allocator, void* data, u64 size, VkBufferUsageFlags bufferUsage, VmaMemoryUsage memoryUsage);
+		static Result Create(Buffer& buffer, const MemoryAllocator& allocator, const void* data, u64 size, VkBufferUsageFlags bufferUsage, VmaMemoryUsage memoryUsage);
+		static Result Create(Buffer& buffer, const StagingBufferManager& manager, const void* data, u64 size, VkBufferUsageFlags bufferUsage, VmaMemoryUsage memoryUsage);
+		static Result Create(Buffer& buffer, StagingBuffer& staging, const StagingBufferManager& manager, const void* data, u64 size, VkBufferUsageFlags bufferUsage, VmaMemoryUsage memoryUsage);
 
-		Result Map(void* data, u64 size);
+
+		Result Map(const void* data, u64 size) const;
 
 		VkBuffer buffer = VK_NULL_HANDLE;
 		Allocation allocation;

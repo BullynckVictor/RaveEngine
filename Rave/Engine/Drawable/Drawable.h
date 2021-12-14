@@ -1,6 +1,6 @@
 #pragma once
 #include "Engine/Graphics/CommandBuffer.h"
-#include "Engine/Graphics/VertexBuffer.h"
+#include "Engine/Graphics/StagingBuffer.h"
 
 namespace rv
 {
