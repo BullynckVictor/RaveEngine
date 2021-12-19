@@ -38,6 +38,9 @@ namespace rv
 		RV_EXTENSION_SURFACE_WIN32,
 		RV_EXTENSION_DEBUG,
 		RV_EXTENSION_SWAPCHAIN,
+		RV_EXTENSION_SWAPCHAIN_FULLSCREEN,
+		RV_EXTENSION_PHYSICAL_DEVICE_PROPERTIES,
+		RV_EXTENSION_GET_SURFACE_CAPABILITIES
 	};
 
 	struct Extensions
@@ -48,6 +51,7 @@ namespace rv
 		Extensions(std::vector<const char*>&& extensions);
 
 		void AddExtension(ExtensionType extension);
+		static const char* GetName(ExtensionType extension);
 
 		std::vector<const char*> extensions;
 	};
@@ -65,6 +69,8 @@ namespace rv
 		static Result Create(Instance& instance, const ApplicationInfo& app = {}, const ValidationLayers& layers = {}, const Extensions& extensions = {});
 
 		void Release();
+
+		template<typename F> F GetProc(const char* name) const { return reinterpret_cast<F>(vkGetInstanceProcAddr(instance, name)); }
 
 		VkInstance instance = VK_NULL_HANDLE;
 		ApplicationInfo app;

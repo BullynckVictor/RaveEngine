@@ -32,6 +32,7 @@ namespace rv
 
 		Duration Mark();
 		Duration Peek() const;
+		void Reset();
 
 	private:
 		static std::chrono::high_resolution_clock::time_point now();

@@ -111,7 +111,12 @@ namespace rv
 
 			bool Minimized() const;
 			bool Open() const;
+			bool Closed() const;
 			Result Close();
+
+			bool FullScreen() const;
+			Result SetFullScreen(bool fullscreen);
+			Result ToggleFullScreen();
 
 			bool Resized();
 			bool PeekResized() const;
@@ -124,6 +129,7 @@ namespace rv
 			LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 			static constexpr Flags<MouseButton> ToMouseButtons(WPARAM wParam);
+			static DWORD GetStyle(bool resize);
 
 		private:
 			HWND hwnd = nullptr;
@@ -132,6 +138,8 @@ namespace rv
 			uint dpi = 96;
 			Point position;
 			bool resized = false;
+
+			WINDOWPLACEMENT prevPlacement{ sizeof(WINDOWPLACEMENT) };
 			
 			static WindowClass wclass;
 		};

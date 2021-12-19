@@ -3,6 +3,9 @@
 #include "Engine/Utility/String.h"
 #include "Engine/Core/Logger.h"
 
+PFN_vkAcquireFullScreenExclusiveModeEXT rv::SwapChain::vkAcquireFullScreenExclusiveMode = nullptr;
+PFN_vkReleaseFullScreenExclusiveModeEXT rv::SwapChain::vkReleaseFullScreenExclusiveMode = nullptr;
+
 template<>
 void rv::destroy(VkSwapchainKHR swap, VkDevice device, VkInstance instance)
 {
@@ -165,6 +168,24 @@ rv::Result rv::SwapChain::Present(u32 image, const Semaphore& wait, bool& resize
 	}
 	resized = false;
 	return rv_try_vkr(vkr);
+}
+
+rv::Result rv::SwapChain::SetFullScreen(bool fullscreen)
+{
+	if (fullscreen)
+		return rv_try_vkr(vkAcquireFullScreenExclusiveMode(device->device, swap));
+	else
+		return rv_try_vkr(vkReleaseFullScreenExclusiveMode(device->device, swap));
+}
+
+rv::Result rv::SwapChain::SetFullScreenFunctions(const Instance& instance)
+{
+	rv_result;
+	if (!vkAcquireFullScreenExclusiveMode)
+		rif_assert(vkAcquireFullScreenExclusiveMode = instance.GetProc<PFN_vkAcquireFullScreenExclusiveModeEXT>("vkAcquireFullScreenExclusiveModeEXT"));
+	if (!vkReleaseFullScreenExclusiveMode)
+		rif_assert(vkReleaseFullScreenExclusiveMode = instance.GetProc<PFN_vkReleaseFullScreenExclusiveModeEXT>("vkReleaseFullScreenExclusiveModeEXT"));
+	return result;
 }
 
 rv::Result rv::SwapChainSupportDetails::Create(SwapChainSupportDetails& details, const Surface& surface, const PhysicalDevice& device)

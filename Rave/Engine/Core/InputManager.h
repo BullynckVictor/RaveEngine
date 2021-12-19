@@ -16,10 +16,15 @@ namespace rv
 		Keyboard();
 
 		bool KeyPressed(Key key) const;
-		u16  Flagged(Key key);
-		u16  Peek(Key key) const;
+		u16  KeyFlagged(Key key);
+		u16  PeekKey(Key key) const;
 		void Flush();
 		void Flush(Key key);
+
+		bool KeyPressed(char key) const;
+		u16  KeyFlagged(char key);
+		u16  PeekKey(char key) const;
+		void Flush(char key);
 
 		template<KeyConcept K, KeyConcept... Keys>
 		bool KeysPressed(K key, Keys... keys) const

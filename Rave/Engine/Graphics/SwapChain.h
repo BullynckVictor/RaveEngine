@@ -45,6 +45,9 @@ namespace rv
 		Result NextImage(u32& image, bool& resized, const Semaphore* semaphore = nullptr, const Fence* fence = nullptr, u64 wait = std::numeric_limits<u64>::max()) const;
 		Result Present(u32 image, const Semaphore& wait, bool& resized);
 
+		Result SetFullScreen(bool fullscreen);
+		static Result SetFullScreenFunctions(const Instance& instance);
+
 		VkSwapchainKHR swap = VK_NULL_HANDLE;
 		Surface surface;
 		Queue presentQueue;
@@ -53,6 +56,9 @@ namespace rv
 		VkSurfaceFormatKHR format = {};
 		VkPresentModeKHR presentMode = {};
 		std::vector<VkFence> imagesInFlight;
+
+		static PFN_vkAcquireFullScreenExclusiveModeEXT vkAcquireFullScreenExclusiveMode;
+		static PFN_vkReleaseFullScreenExclusiveModeEXT vkReleaseFullScreenExclusiveMode;
 
 		const Device* device = nullptr;
 	};

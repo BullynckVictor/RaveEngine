@@ -55,8 +55,11 @@ rv::Result rv::Device::Create(
 {
 	device.Release();
 
+	std::vector<std::string> additionalExtensions;
 	rv_result;
-	rv_rif(PhysicalDevice::Create(device.physical, instance, requirements, rater));
+	rv_rif(PhysicalDevice::Create(device.physical, instance, requirements, rater, &additionalExtensions));
+
+	additionalExtensions.insert(additionalExtensions.end(), requirements.extensions.extensions.begin(), requirements.extensions.extensions.end());
 
 	float queuePriority = 1.0f;
 	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
@@ -91,6 +94,10 @@ rv::Result rv::Device::Create(
 		}
 	}
 
+	std::vector<const char*> extensions(requirements.extensions.extensions.size() + additionalExtensions.size());
+	std::transform(additionalExtensions.begin(), additionalExtensions.end(), extensions.begin(), [](const std::string& string) { return string.c_str(); });
+	std::copy(requirements.extensions.extensions.begin(), requirements.extensions.extensions.end(), extensions.begin() + additionalExtensions.size());
+
 	VkPhysicalDeviceFeatures features{};
 
 	VkDeviceCreateInfo createInfo{};
@@ -98,8 +105,8 @@ rv::Result rv::Device::Create(
 	createInfo.pQueueCreateInfos = queueCreateInfos.data();
 	createInfo.queueCreateInfoCount = (u32)queueCreateInfos.size();
 	createInfo.pEnabledFeatures = &features;
-	createInfo.enabledExtensionCount = (u32)requirements.extensions.extensions.size();
-	createInfo.ppEnabledExtensionNames = requirements.extensions.extensions.data();
+	createInfo.enabledExtensionCount = (u32)extensions.size();
+	createInfo.ppEnabledExtensionNames = extensions.data();
 
 	rif_try_vkr(vkCreateDevice(device.physical.device, &createInfo, nullptr, &device.device));
 	rv_log(str("Created device \"", device.physical.properties.deviceName, "\" with score ", device.physical.Rate(requirements, rater)));
@@ -145,7 +152,8 @@ rv::Result rv::PhysicalDevice::Create(
 	PhysicalDevice& device, 
 	const Instance& instance,
 	const PhysicalDeviceRequirements& requirements,
-	const DeviceRater& rater
+	const DeviceRater& rater, 
+	std::vector<std::string>* outExtensions
 )
 {
 	device.Release();
@@ -160,7 +168,9 @@ rv::Result rv::PhysicalDevice::Create(
 
 	for (const auto& d : devices) 
 	{
-		int rating = d.Rate(requirements, rater);
+		if (outExtensions)
+			outExtensions->clear();
+		int rating = d.Rate(requirements, rater, outExtensions);
 		if (rating > bestRating) 
 		{
 			best = &d;
@@ -174,8 +184,6 @@ rv::Result rv::PhysicalDevice::Create(
 
 	return result;
 }
-
-#include <iostream>
 
 rv::Result rv::PhysicalDevice::Create(std::vector<PhysicalDevice>& devices, const Instance& instance)
 {
@@ -235,7 +243,7 @@ void rv::PhysicalDevice::FillData()
 	}
 }
 
-int rv::PhysicalDevice::Rate(const PhysicalDeviceRequirements& requirements, const DeviceRater& rater) const
+int rv::PhysicalDevice::Rate(const PhysicalDeviceRequirements& requirements, const DeviceRater& rater, std::vector<std::string>* outExtensions) const
 {
 	int score = 0;
 
@@ -256,6 +264,20 @@ int rv::PhysicalDevice::Rate(const PhysicalDeviceRequirements& requirements, con
 	for (u32 i = 0; i < sizeof(VkPhysicalDeviceFeatures) / sizeof(VkBool32); ++i)
 		if (features[i])
 			score += rater.GetFeatureMultiplierIndex(i);
+
+	uint32_t extensionCount = 0;
+	vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
+
+	std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+	vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
+
+	for (const auto& extension : availableExtensions)
+	{
+		int multiplier = rater.GetExtensionMultiplier(extension.extensionName);
+		score += multiplier;
+		if (multiplier && outExtensions)
+			outExtensions->push_back(extension.extensionName);
+	}
 
 	return score;
 }
@@ -396,6 +418,22 @@ int rv::DeviceRater::GetQueueFamilyMultipler(const QueueFamilyGetter& family) co
 	return 0;
 }
 
+void rv::DeviceRater::AddExtensionMultiplier(ExtensionType extension, int multiplier)
+{
+	extensionMultipliers[Extensions::GetName(extension)] = multiplier;
+}
+
+int rv::DeviceRater::GetExtensionMultiplier(ExtensionType extension) const
+{
+	return GetExtensionMultiplier(Extensions::GetName(extension));
+}
+
+int rv::DeviceRater::GetExtensionMultiplier(const char* extension) const
+{
+	auto it = extensionMultipliers.find(extension);
+	return it == extensionMultipliers.end() ? 0 : it->second;
+}
+
 rv::PhysicalDeviceRequirements rv::DefaultDeviceRequirements(const std::vector<std::reference_wrapper<const Surface>>& surfaces)
 {
 	PhysicalDeviceRequirements requirements;
@@ -450,6 +488,10 @@ rv::DeviceRater rv::DefaultDeviceRater()
 
 	rater.AddTypeMultiplier(VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU, 4000);
 	rater.AddLimitMultiplier(offsetof(VkPhysicalDeviceLimits, maxImageDimension2D), 0.1f);
+
+//	rater.AddExtensionMultiplier(RV_EXTENSION_SWAPCHAIN_FULLSCREEN, 500);
+//	rater.AddExtensionMultiplier(RV_EXTENSION_GET_SURFACE_CAPABILITIES, 100);
+//	rater.AddExtensionMultiplier(RV_EXTENSION_PHYSICAL_DEVICE_PROPERTIES, 100);
 
 	return rater;
 }

@@ -30,6 +30,8 @@ rv::Result rv::WindowRenderer::Create(WindowRenderer& renderer, Engine& engine, 
 	rv_rif(CommandPool::CreateGraphics(renderer.drawPool, engine.graphics.device, true));
 	check_debug_static();
 
+	rv_rif(SwapChain::SetFullScreenFunctions(engine.graphics.instance));
+
 	rv_rif(Window::Create(renderer.window, window));
 	rv_rif(renderer.Resize());
 
@@ -94,6 +96,24 @@ rv::Result rv::WindowRenderer::SetVSync(bool vsync)
 		return Resize();
 	}
 	return success;
+}
+
+bool rv::WindowRenderer::FullScreen() const
+{
+	return window.FullScreen();
+}
+
+rv::Result rv::WindowRenderer::SetFullScreen(bool fullscreen)
+{
+	rv_result;
+	rv_rif(window.SetFullScreen(fullscreen));
+	return swap.SetFullScreen(fullscreen);
+}
+
+rv::Result rv::WindowRenderer::ToggleFullScreen()
+{
+	bool fullscreen = !window.FullScreen();
+	return SetFullScreen(fullscreen);
 }
 
 rv::Result rv::WindowRenderer::CreateShape(Shape& shape, const HeapBuffer<Vertex2>& vertices, const HeapBuffer<u16>& indices)

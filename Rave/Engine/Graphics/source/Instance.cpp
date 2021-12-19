@@ -107,14 +107,10 @@ rv::Extensions::Extensions()
 
 rv::Extensions::Extensions(Flags<ExtensionType> flags)
 {
-	if (flags.contain(RV_EXTENSION_SURFACE))
-		extensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
-	if (flags.contain(RV_EXTENSION_SURFACE_WIN32))
-		extensions.push_back(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
-	if (flags.contain(RV_EXTENSION_DEBUG))
-		extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-	if (flags.contain(RV_EXTENSION_SWAPCHAIN))
-		extensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+	auto f = flags.data();
+	for (u32 i = 0; i < sizeof(f) * 8; ++i)
+		if ((f >> i) & 0x1)
+			extensions.push_back(GetName(static_cast<ExtensionType>(i)));
 }
 
 rv::Extensions::Extensions(const std::vector<const char*>& extensions)
@@ -131,21 +127,33 @@ rv::Extensions::Extensions(std::vector<const char*>&& extensions)
 
 void rv::Extensions::AddExtension(ExtensionType extension)
 {
+	extensions.push_back(GetName(extension));
+}
+
+const char* rv::Extensions::GetName(ExtensionType extension)
+{
 	switch (extension)
 	{
 		case RV_EXTENSION_SURFACE:
-			extensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
+			return VK_KHR_SURFACE_EXTENSION_NAME;
 			break;
 		case RV_EXTENSION_SURFACE_WIN32:
-			extensions.push_back(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
+			return VK_KHR_WIN32_SURFACE_EXTENSION_NAME;
 			break;
 		case RV_EXTENSION_DEBUG:
-			extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+			return VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
 			break;
 		case RV_EXTENSION_SWAPCHAIN:
-			extensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
+			return VK_KHR_SWAPCHAIN_EXTENSION_NAME;
 			break;
+		case RV_EXTENSION_SWAPCHAIN_FULLSCREEN:
+			return VK_EXT_FULL_SCREEN_EXCLUSIVE_EXTENSION_NAME;
+		case RV_EXTENSION_PHYSICAL_DEVICE_PROPERTIES:
+			return VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME;
+		case RV_EXTENSION_GET_SURFACE_CAPABILITIES:
+			return VK_KHR_GET_SURFACE_CAPABILITIES_2_EXTENSION_NAME;
 	}
+	return nullptr;
 }
 
 rv::Instance::Instance(Instance&& rhs) noexcept

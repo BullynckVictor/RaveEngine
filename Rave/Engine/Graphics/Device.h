@@ -2,6 +2,7 @@
 #include "Engine/Graphics/Instance.h"
 #include "Engine/Graphics/Surface.h"
 #include "Engine/Utility/Optional.h"
+#include "Engine/Utility/String.h"
 #include <array>
 #include <map>
 #include <list>
@@ -39,12 +40,17 @@ namespace rv
 		void AddQueueFamilyMultipler(const QueueFamilyGetter& family, int multiplier = 1);
 		int GetQueueFamilyMultipler(const QueueFamilyGetter& family) const;
 
+		void AddExtensionMultiplier(ExtensionType extension, int multiplier = 1);
+		int GetExtensionMultiplier(ExtensionType extension) const;
+		int GetExtensionMultiplier(const char* extension) const;
+
 		int Rate(const VkPhysicalDeviceLimits& limits) const;
 
 		std::array<int, VK_PHYSICAL_DEVICE_TYPE_CPU + 1> typeMultipliers = {};
 		std::map<int, float> limitMultiplier;
 		std::array<int, sizeof(VkPhysicalDeviceFeatures) / sizeof(VkBool32)> featureMultipliers = {};
 		std::list<std::pair<QueueFamilyGetter, int>> queueFamilyMultipliers;
+		std::map<const char*, int, string_less> extensionMultipliers;
 	};
 
 	PhysicalDeviceRequirements DefaultDeviceRequirements(const std::vector<std::reference_wrapper<const Surface>>& surfaces = {});
@@ -136,7 +142,8 @@ namespace rv
 			PhysicalDevice& device,
 			const Instance& instance,
 			const PhysicalDeviceRequirements& requirements,
-			const DeviceRater& rater
+			const DeviceRater& rater,
+			std::vector<std::string>* outExtensions = nullptr
 		);
 		static Result Create(std::vector<PhysicalDevice>& devices, const Instance& instance);
 
@@ -144,7 +151,7 @@ namespace rv
 
 		bool Suitable(const PhysicalDeviceRequirements& requirements) const;
 		void FillData();
-		int Rate(const PhysicalDeviceRequirements& requirements, const DeviceRater& rater) const;
+		int Rate(const PhysicalDeviceRequirements& requirements, const DeviceRater& rater, std::vector<std::string>* outExtensions = nullptr) const;
 
 		ResultValue<bool> SupportsExtensions(const Extensions& extensions) const;
 
@@ -178,6 +185,8 @@ namespace rv
 		Queue GetQueue(const QueueFamilyGetter& family, u32 index = 0) const;
 
 		Result Wait() const;
+
+		template<typename F> F GetProc(const char* name) const { return reinterpret_cast<F>(vkGetDeviceProcAddr(device, name)); }
 
 		VkDevice device = VK_NULL_HANDLE;
 		PhysicalDevice physical;

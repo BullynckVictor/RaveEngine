@@ -46,4 +46,8 @@ namespace rv
 	{
 		return !strcmp(a, b);
 	}
+
+	struct string_less {
+		bool operator() (const char* a, const char* b) const { return strcmp(a, b) < 0; };
+	};
 }

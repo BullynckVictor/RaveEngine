@@ -49,9 +49,7 @@ rv::Result rv::win32::Window::Create(Window& window, const WindowDescriptor& des
 		rv_rif(WindowClass::Create(wclass, "Rave Window Class", SetupProc));
 
 	DWORD styleEx = 0;
-	DWORD style =  WS_OVERLAPPEDWINDOW;
-	if (!descriptor.resize)
-		style &= ~WS_THICKFRAME & ~WS_MAXIMIZEBOX;
+	DWORD style = GetStyle(descriptor.resize);
 
 	window.dpi = GetDpiForSystem();
 
@@ -152,9 +150,64 @@ bool rv::win32::Window::Open() const
 	return hwnd;
 }
 
+bool rv::win32::Window::Closed() const
+{
+	return !Open();
+}
+
 rv::Result rv::win32::Window::Close()
 {
 	return rv_win32_check(DestroyWindow(hwnd));
+}
+
+bool rv::win32::Window::FullScreen() const
+{
+	return !(GetWindowLongPtr(hwnd, GWL_STYLE) & WS_OVERLAPPEDWINDOW);
+}
+
+rv::Result rv::win32::Window::SetFullScreen(bool fullscreen)
+{
+	rv_result;
+
+	if (fullscreen)
+	{
+		if (FullScreen())
+			return result;
+
+		MONITORINFO mi { sizeof(MONITORINFO) };
+		rif_win32_assert(GetWindowPlacement(hwnd, &prevPlacement));
+		rif_win32_assert(GetMonitorInfo(MonitorFromWindow(hwnd, MONITOR_DEFAULTTOPRIMARY), &mi));
+
+		DWORD style = GetStyle(descriptor.resize);
+		rif_win32_assert(SetWindowLongPtr(hwnd, GWL_STYLE, style & ~WS_OVERLAPPEDWINDOW));
+
+		rif_win32_assert(SetWindowPos(
+			hwnd, HWND_TOP,
+			mi.rcMonitor.left, mi.rcMonitor.top,
+			mi.rcMonitor.right - mi.rcMonitor.left,
+			mi.rcMonitor.bottom - mi.rcMonitor.top,
+			SWP_NOOWNERZORDER | SWP_FRAMECHANGED
+		));
+	}
+	else
+	{
+		if (!FullScreen())
+			return result;
+
+		rif_win32_assert(SetWindowLong(hwnd, GWL_STYLE, GetStyle(descriptor.resize)));
+		rif_win32_assert(SetWindowPlacement(hwnd, &prevPlacement));
+		rif_win32_assert(SetWindowPos(
+			hwnd, NULL, 0, 0, 0, 0,
+			SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER |
+			SWP_NOOWNERZORDER | SWP_FRAMECHANGED
+		));
+	}
+	return result;
+}
+
+rv::Result rv::win32::Window::ToggleFullScreen()
+{
+	return SetFullScreen(!FullScreen());
 }
 
 bool rv::win32::Window::Resized()
@@ -353,6 +406,14 @@ constexpr rv::Flags<rv::MouseButton> rv::win32::Window::ToMouseButtons(WPARAM wP
 		case MK_XBUTTON2:	additionalButtons |= RV_MOUSE_X2; break;
 	}
 	return additionalButtons;
+}
+
+DWORD rv::win32::Window::GetStyle(bool resize)
+{
+	DWORD style = WS_OVERLAPPEDWINDOW;
+	if (!resize)
+		style &= ~WS_THICKFRAME & ~WS_MAXIMIZEBOX;
+	return style;
 }
 
 #endif

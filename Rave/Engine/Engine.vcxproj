@@ -96,6 +96,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Core\source\Application.cpp" />
     <ClCompile Include="Core\source\Engine.cpp" />
     <ClCompile Include="Core\source\InputEvents.cpp" />
     <ClCompile Include="Core\source\InputManager.cpp" />
@@ -135,6 +136,7 @@
     <ClCompile Include="Utility\source\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Core\Application.h" />
     <ClInclude Include="Core\CompileTimeInfo.h" />
     <ClInclude Include="Core\InputEvents.h" />
     <ClInclude Include="Core\InputManager.h" />

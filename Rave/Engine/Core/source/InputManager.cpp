@@ -125,7 +125,7 @@ bool rv::Keyboard::KeyPressed(Key key) const
 	return keys[key];
 }
 
-rv::u16 rv::Keyboard::Flagged(Key key)
+rv::u16 rv::Keyboard::KeyFlagged(Key key)
 {
 	u16 f = flagged[key];
 	if (f != 0)
@@ -133,7 +133,7 @@ rv::u16 rv::Keyboard::Flagged(Key key)
 	return f;
 }
 
-rv::u16 rv::Keyboard::Peek(Key key) const
+rv::u16 rv::Keyboard::PeekKey(Key key) const
 {
 	return flagged[key];
 }
@@ -146,6 +146,26 @@ void rv::Keyboard::Flush()
 void rv::Keyboard::Flush(Key key)
 {
 	flagged[key] = 0;
+}
+
+bool rv::Keyboard::KeyPressed(char key) const
+{
+	return KeyPressed((Key)key);
+}
+
+rv::u16 rv::Keyboard::KeyFlagged(char key)
+{
+	return KeyFlagged((Key)key);
+}
+
+rv::u16 rv::Keyboard::PeekKey(char key) const
+{
+	return PeekKey((Key)key);
+}
+
+void rv::Keyboard::Flush(char key)
+{
+	return Flush((Key)key);
 }
 
 const rv::Vector2& rv::Mouse::Position() const

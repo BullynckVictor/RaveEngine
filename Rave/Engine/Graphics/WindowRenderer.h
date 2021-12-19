@@ -42,6 +42,10 @@ namespace rv
 		Result Render() override;
 		Result SetVSync(bool vsync);
 
+		bool FullScreen() const;
+		Result SetFullScreen(bool fullscreen);
+		Result ToggleFullScreen();
+
 		Result Wait() const;
 
 		Window window;

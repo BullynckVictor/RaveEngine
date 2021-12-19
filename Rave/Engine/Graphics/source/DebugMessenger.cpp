@@ -78,7 +78,7 @@ rv::Result rv::DebugMessenger::Create(DebugMessenger& messenger, const Instance&
 	createInfo.messageSeverity = severity;
 	createInfo.pUserData = &messenger;
 
-	PFN_vkCreateDebugUtilsMessengerEXT vkCreateDebugUtilsMessengerEXT = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance.instance, "vkCreateDebugUtilsMessengerEXT");
+	PFN_vkCreateDebugUtilsMessengerEXT vkCreateDebugUtilsMessengerEXT = instance.GetProc<PFN_vkCreateDebugUtilsMessengerEXT>("vkCreateDebugUtilsMessengerEXT");
 	if (vkCreateDebugUtilsMessengerEXT)
 		return rv_try_vkr_info(vkCreateDebugUtilsMessengerEXT(instance.instance, &createInfo, nullptr, &messenger.messenger), "Unable to create DebugMessenger");
 	else
