@@ -1,5 +1,4 @@
 #include "Engine/Graphics/Graphics.h"
-#include "Engine/Graphics/GraphicsHelper.h"
 #include "Engine/Utility/Error.h"
 #include "Engine/Utility/String.h"
 #include "Engine/Utility/File.h"
@@ -43,9 +42,9 @@ rv::Result rv::Graphics::Create(Graphics& graphics, const GraphicsInfo& info)
 	rv_debug_only(rv_rif(DebugMessenger::Create(graphics.debug, graphics.instance, combine(RV_SEVERITY_ERROR, RV_SEVERITY_WARNING), false)));
 	check_debug_static();
 
-	std::vector<std::reference_wrapper<const Surface>> surfaces; 
+	std::vector<std::reference_wrapper<const Surface>> surfaces;
 	surfaces.reserve(info.surfaces.size() + info.windows.size());
-	std::vector<Surface> windowSurfaces; 
+	std::vector<Surface> windowSurfaces;
 	windowSurfaces.reserve(info.windows.size());
 
 	for (const auto surface : info.surfaces)
@@ -125,19 +124,40 @@ rv::Result rv::Graphics::AddShaderPath(const char* path)
 	return success;
 }
 
-rv::Result rv::Graphics::CreateShape(Shape& shape, const HeapBuffer<Vertex2>& vertices, const HeapBuffer<u16>& indices)
+rv::Result rv::Graphics::CreateShape(Shape& shape, const HeapBuffer<Vertex2>& vertices, const HeapBuffer<u16>& indices, const FColor& color)
 {
-	GraphicsHelper::Manage(*this, shape);
-	return Shape::Create(shape, manager, vertices, indices);
+	rv_result;
+	if (shape.invalid())
+		shape.set(NewDrawable());
+	if (InitStatic<Shape>())
+		rv_rif(Shape::InitStaticData(*this, setAllocator));
+	return Shape::Create(shape, *this, manager, vertices, indices, color);
 }
 
-rv::Result rv::Graphics::CreateShape(Shape& shape, HeapBuffer<Vertex2>&& vertices, HeapBuffer<u16>&& indices)
+rv::Result rv::Graphics::CreateShape(Shape& shape, HeapBuffer<Vertex2>&& vertices, HeapBuffer<u16>&& indices, const FColor& color)
 {
-	GraphicsHelper::Manage(*this, shape);
-	return Shape::Create(shape, manager, std::move(vertices), indices);
+	rv_result;
+	if (shape.invalid())
+		shape.set(NewDrawable());
+	if (InitStatic<Shape>())
+		rv_rif(Shape::InitStaticData(*this, setAllocator));
+	return Shape::Create(shape, *this, manager, std::move(vertices), std::move(indices), color);
 }
 
-void rv::Graphics::AddDrawable(DrawableData* drawable)
+rv::Drawable rv::Graphics::NewDrawable()
 {
-	drawables.emplace_back(drawable);
+	if (freeDrawables.empty())
+		return lastDrawable++;
+	Drawable drawable = freeDrawables.front();
+	freeDrawables.pop_front();
+	return drawable;
+}
+
+template<typename D>
+bool rv::Graphics::InitStatic()
+{
+	bool hasInit = staticInitializedDrawables.contains(typeid(D).hash_code());
+	if (!hasInit)
+		staticInitializedDrawables.insert(typeid(D).hash_code());
+	return !hasInit;
 }

@@ -65,7 +65,8 @@ rv::PipelineLayout::PipelineLayout(PipelineLayout&& rhs) noexcept
 	multisampling(std::move(rhs.multisampling)),
 	colorBlendAttachment(std::move(rhs.colorBlendAttachment)),
 	colorBlending(std::move(rhs.colorBlending)),
-	device(move(rhs.device))
+	device(move(rhs.device)),
+	setLayouts(std::move(rhs.setLayouts))
 {
 }
 
@@ -87,6 +88,7 @@ rv::PipelineLayout& rv::PipelineLayout::operator=(PipelineLayout&& rhs) noexcept
 	colorBlendAttachment = std::move(rhs.colorBlendAttachment);
 	colorBlending = std::move(rhs.colorBlending);
 	device = move(rhs.device);
+	setLayouts = std::move(rhs.setLayouts);
 	return *this;
 }
 
@@ -97,6 +99,8 @@ rv::Result rv::PipelineLayout::Create(PipelineLayout& layout, const Device& devi
 
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+	pipelineLayoutInfo.setLayoutCount = (u32)layout.setLayouts.size();
+	pipelineLayoutInfo.pSetLayouts = layout.setLayouts.data();
 
 	return rv_try_vkr(vkCreatePipelineLayout(device.device, &pipelineLayoutInfo, nullptr, &layout.layout));
 }
@@ -116,6 +120,7 @@ void rv::PipelineLayout::SetToDescriptor(const PipelineLayoutDescriptor& descrip
 	SetBlending(descriptor.blending);
 	if (descriptor.vertex.attributes)
 		SetVertexType(descriptor.vertex);
+	setLayouts = descriptor.setLayouts;
 }
 
 void rv::PipelineLayout::SetTopology(VkPrimitiveTopology topology)
@@ -176,6 +181,11 @@ void rv::PipelineLayout::AddRenderPass(const RenderPass& pass, u32 subpass)
 {
 	this->pass = pass.pass;
 	this->subpass = subpass;
+}
+
+void rv::PipelineLayout::AddLayout(const DescriptorSetLayout& layout)
+{
+	setLayouts.push_back(layout.layout);
 }
 
 void rv::PipelineLayout::SetVertexType(const VertexDescriptor& vertex)
@@ -266,7 +276,12 @@ rv::PipelineLayoutDescriptor::operator size_t() const
 	return hash;
 }
 
-size_t rv::PipelineLayoutDescriptor::rehash()
+void rv::PipelineLayoutDescriptor::AddLayout(const DescriptorSetLayout& layout)
+{
+	setLayouts.push_back(layout.layout);
+}
+
+size_t rv::PipelineLayoutDescriptor::Rehash()
 {
 	hash = rv::hash(
 		topology,

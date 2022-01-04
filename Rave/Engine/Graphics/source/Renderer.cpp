@@ -19,36 +19,6 @@ void rv::Renderer::SetEngine(Engine& e)
 	engine = &e;
 }
 
-/*
-rv::Result rv::Renderer::AddRenderPass(RenderPass*& pass, const Identifier& name, const RenderPassDescriptor& descriptor)
-{
-	rv_result;
-	rif_assert(engine);
-	pass = nullptr;
-	auto it = passes.find(name);
-	if (it == passes.end())
-	{
-		RenderPass& p = passes[name];
-		rv_rif(RenderPass::Create(p, engine->graphics.device, descriptor));
-		pass = &p;
-		return result;
-	}
-	pass = &it->second;
-	return result;
-}
-
-rv::Result rv::Renderer::AddRenderPass(const Identifier& name, const RenderPassDescriptor& descriptor)
-{
-	RenderPass* p;
-	return AddRenderPass(p, name, descriptor);
-}
-
-rv::RenderPass* rv::Renderer::GetRenderPass(const Identifier& name)
-{
-	auto it = passes.find(name);
-	return (it == passes.end()) ? nullptr : &it->second;
-}
-*/
 rv::FullPipeline* rv::Renderer::GetCachedPipeline(const PipelineLayoutDescriptor& layout)
 {
 	auto it = pipelines.find(layout);

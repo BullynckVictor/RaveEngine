@@ -52,12 +52,18 @@ namespace rv
 		D m_data;
 	};
 
-	template<typename E, typename D = size_t, typename... Args> static constexpr Flags<E, D> combine(const E& flag, const Args&... args)
+	template<typename E, typename D = size_t, typename... Args>
+	static constexpr Flags<E, D> combine(const E& flag, const Args&... args)
 	{
 		if constexpr (sizeof...(Args) != 0)
 			return Flags<E, D>(flag) | combine(args...);
 		else
 			return Flags<E, D>(flag);
+	}
+	template<typename E, typename D = size_t>
+	static constexpr Flags<E, D> combine()
+	{
+		return Flags<E, D>();
 	}
 
 	template<typename E>

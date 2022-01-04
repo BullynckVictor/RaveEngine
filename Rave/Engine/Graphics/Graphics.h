@@ -13,6 +13,9 @@
 #include "Engine/Drawable/Shape.h"
 #include "Engine/Graphics/CommandPool.h"
 #include "Engine/Graphics/StagingBuffer.h"
+#include "Engine/Utility/Multimap.h"
+#include "Engine/Graphics/DescriptorSet.h"
+#include <set>
 
 namespace rv
 {
@@ -38,13 +41,24 @@ namespace rv
 		Result CreateShader(const char* name, ShaderType type = RV_ST_NULL);
 		Result AddShaderPath(const char* path);
 
-		Result CreateShape(Shape& shape, const HeapBuffer<Vertex2>& vertices, const HeapBuffer<u16>& indices);
-		Result CreateShape(Shape& shape, HeapBuffer<Vertex2>&& vertices, HeapBuffer<u16>&& indices);
+		template<DrawableStaticData D>	
+		D::StaticData& GetStaticData() { return drawableData.get<D::StaticData>(); }
+		template<DrawableData D>	
+		D::Data& GetData(D& drawable) { return drawableData.get<D::Data>(drawable.id()); }
+		template<DrawableData D>
+		D::Data& GetDataInterpreted(Drawable drawable) { return drawableData.get<D::Data>(drawable.id()); }
+
+		Result CreateShape(Shape& shape, const HeapBuffer<Vertex2>& vertices, const HeapBuffer<u16>& indices, const FColor& color);
+		Result CreateShape(Shape& shape, HeapBuffer<Vertex2>&& vertices, HeapBuffer<u16>&& indices, const FColor& color);
 
 	private:
-		void AddDrawable(DrawableData* drawable);
+		template<typename D>
+		bool InitStatic();
+
+		Drawable NewDrawable();
 
 	private:
+
 		Instance instance;
 		rv_debug_only(DebugMessenger debug;);
 		Device device;
@@ -54,7 +68,14 @@ namespace rv
 		ShaderMap shaders;
 		std::vector<std::filesystem::path> shaderpaths;
 
-		std::vector<std::unique_ptr<DrawableData>> drawables;
+		MultiMap drawableData;
+
+		uint lastDrawable = 0;
+		std::list<Drawable> freeDrawables;
+
+		DescriptorSetAllocator setAllocator = device;
+
+		std::set<size_t> staticInitializedDrawables;
 
 		friend class Engine;
 		friend class Renderer;

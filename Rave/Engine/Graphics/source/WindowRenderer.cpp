@@ -116,22 +116,6 @@ rv::Result rv::WindowRenderer::ToggleFullScreen()
 	return SetFullScreen(fullscreen);
 }
 
-rv::Result rv::WindowRenderer::CreateShape(Shape& shape, const HeapBuffer<Vertex2>& vertices, const HeapBuffer<u16>& indices)
-{
-	rv_result;
-	rv_rif(engine->graphics.CreateShape(shape, vertices, indices));
-	rv_rif(GraphicsHelper::InitDrawable(*this, shape));
-	return result;
-}
-
-rv::Result rv::WindowRenderer::CreateShape(Shape& shape, HeapBuffer<Vertex2>&& vertices, HeapBuffer<u16>&& indices)
-{
-	rv_result;
-	rv_rif(engine->graphics.CreateShape(shape, std::move(vertices), std::move(indices)));
-	rv_rif(GraphicsHelper::InitDrawable(*this, shape));
-	return result;
-}
-
 rv::Result rv::WindowRenderer::Render()
 {
 	if (window.Minimized() || window.Size().height <= 0)
@@ -175,6 +159,43 @@ rv::Result rv::WindowRenderer::Render()
 rv::Result rv::WindowRenderer::Wait() const
 {
 	return Frame::Wait(engine->graphics.device, frames);
+}
+
+rv::Result rv::WindowRenderer::CreateShape(Shape& shape, const HeapBuffer<Vertex2>& vertices, const HeapBuffer<u16>& indices, const FColor& color)
+{
+	rv_result;
+	rv_rif(engine->graphics.CreateShape(shape, vertices, indices, color));
+	rv_rif(Shape::InitImageData(shape, engine->graphics, *this, engine->graphics.setAllocator, engine->graphics.manager, (u32)swap.images.size()));
+	return AddDrawable(shape);
+}
+
+rv::Result rv::WindowRenderer::CreateShape(Shape& shape, HeapBuffer<Vertex2>&& vertices, HeapBuffer<u16>&& indices, const FColor& color)
+{
+	rv_result;
+	rv_rif(engine->graphics.CreateShape(shape, std::move(vertices), std::move(indices), color));
+	rv_rif(Shape::InitImageData(shape, engine->graphics, *this, engine->graphics.setAllocator, engine->graphics.manager, (u32)swap.images.size()));
+	return AddDrawable(shape);
+}
+
+rv::Result rv::WindowRenderer::Record(const DrawableRecorder& recorder, CommandBuffer& draw, size_t index)
+{
+	rv_result;
+	rv_rif(draw.Begin());
+	draw.StartRenderPass(colorPass, frameBuffers[index], 0, window.Size());
+	draw.BindPipeline(recorder.pipeline->pipeline);
+	recorder.recordFunction(draw, engine->graphics, *this, recorder, (u32)index);
+	draw.EndRenderPass();
+	return draw.End();
+}
+
+rv::u32 rv::WindowRenderer::ImageCount() const
+{
+	return (u32)swap.images.size();
+}
+
+rv::u32 rv::WindowRenderer::CurrentImage() const
+{
+	return Optional<u32>::invalid_value;
 }
 
 rv::Result rv::WindowRenderer::Resize()
@@ -241,16 +262,6 @@ rv::Result rv::WindowRenderer::Resize()
 			rv_rif(Record(recorder, draw, i));
 		}
 	}
-	return result;
-}
 
-rv::Result rv::WindowRenderer::Record(const DrawableRecorder& recorder, CommandBuffer& draw, size_t index)
-{
-	rv_result;
-	rv_rif(draw.Begin());
-	draw.StartRenderPass(colorPass, frameBuffers[index], 0, window.Size());
-	draw.BindPipeline(recorder.pipeline->pipeline);
-	recorder.recordFunction(draw, *recorder.data);
-	draw.EndRenderPass();
-	return draw.End();
+	return result;
 }

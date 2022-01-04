@@ -10,7 +10,12 @@ private:
 	void Update(const rv::Duration dt) override;
 
 private:
-	rv::Shape triangle;
-	rv::Timer timer;
+	struct Triangle
+	{
+		rv::Shape shape;
+		rv::Shape::Data* data = nullptr;
+	} triangle;
+	rv::Timer frameTimer;
 	rv::uint frames = 0;
+	rv::Timer timer;
 };

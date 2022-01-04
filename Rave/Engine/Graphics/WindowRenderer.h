@@ -36,9 +36,6 @@ namespace rv
 		Result GetPipeline(FullPipeline*& pipeline, const PipelineLayoutDescriptor& layout);
 		Result AddPipeline(const PipelineLayoutDescriptor& layout);
 
-		Result CreateShape(Shape& shape, const HeapBuffer<Vertex2>& vertices, const HeapBuffer<u16>& indices);
-		Result CreateShape(Shape& shape, HeapBuffer<Vertex2>&& vertices, HeapBuffer<u16>&& indices);
-
 		Result Render() override;
 		Result SetVSync(bool vsync);
 
@@ -50,9 +47,19 @@ namespace rv
 
 		Window window;
 
+		Result CreateShape(Shape& shape, const HeapBuffer<Vertex2>& vertices, const HeapBuffer<u16>& indices, const FColor& color);
+		Result CreateShape(Shape& shape, HeapBuffer<Vertex2>&& vertices, HeapBuffer<u16>&& indices, const FColor& color);
+
+		template<DrawableConcept D>
+		Result AddDrawable(D& drawable);
+
+		Result Record(const DrawableRecorder& recorder, CommandBuffer& draw, size_t index);
+
+		u32 ImageCount() const;
+		u32 CurrentImage() const;
+
 	private:
 		Result Resize();
-		Result Record(const DrawableRecorder& recorder, CommandBuffer& draw, size_t index);
 
 	private:
 		SwapChain swap;
@@ -66,7 +73,6 @@ namespace rv
 		u32 nextFrame = 0;
 		SwapChainPreferences swapPreferences;
 		std::vector<DrawableRecorder> recorders;
-		std::set<size_t> initialisedDrawableTypes;
 
 		friend class GraphicsHelper;
 	};

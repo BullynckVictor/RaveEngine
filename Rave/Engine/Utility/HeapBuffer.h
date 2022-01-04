@@ -25,7 +25,7 @@ namespace rv
 			std::copy(rhs.begin(), rhs.end(), begin());
 			return *this;
 		}
-		HeapBuffer& operator= (HeapBuffer&& rhs)
+		HeapBuffer& operator= (HeapBuffer&& rhs) noexcept
 		{
 			m_data = rhs.m_data;
 			m_size = rhs.m_size;

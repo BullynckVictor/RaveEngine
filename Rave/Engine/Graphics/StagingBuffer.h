@@ -2,6 +2,7 @@
 #include "Engine/Graphics/Buffer.h"
 #include "Engine/Graphics/CommandBuffer.h"
 #include "Engine/Graphics/Fence.h"
+#include "Engine/Utility/HeapBuffer.h"
 
 namespace rv
 {

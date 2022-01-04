@@ -11,6 +11,7 @@
 
 #include "Engine/Graphics/Vulkan.h"
 #include "Engine/Graphics/Graphics.h"
+#include "Engine/Graphics/GraphicsHelper.h"
 
 #include "Engine/Utility/Hash.h"
 #include "Engine/Utility/Identifier.h"
@@ -26,3 +27,4 @@
 #include "Engine/Utility/Vector.h"
 #include "Engine/Utility/Random.h"
 #include "Engine/Utility/HeapBuffer.h"
+#include "Engine/Utility/Multimap.h"

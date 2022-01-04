@@ -109,6 +109,7 @@
     <ClCompile Include="Graphics\source\CommandBuffer.cpp" />
     <ClCompile Include="Graphics\source\CommandPool.cpp" />
     <ClCompile Include="Graphics\source\DebugMessenger.cpp" />
+    <ClCompile Include="Graphics\source\DescriptorSet.cpp" />
     <ClCompile Include="Graphics\source\Device.cpp" />
     <ClCompile Include="Graphics\source\Fence.cpp" />
     <ClCompile Include="Graphics\source\Frame.cpp" />
@@ -126,11 +127,11 @@
     <ClCompile Include="Graphics\source\StagingBuffer.cpp" />
     <ClCompile Include="Graphics\source\Surface.cpp" />
     <ClCompile Include="Graphics\source\SwapChain.cpp" />
-    <ClCompile Include="Graphics\source\VertexBuffer.cpp" />
     <ClCompile Include="Graphics\source\WindowRenderer.cpp" />
     <ClCompile Include="Utility\source\Error.cpp" />
     <ClCompile Include="Utility\source\Event.cpp" />
     <ClCompile Include="Utility\source\Exception.cpp" />
+    <ClCompile Include="Utility\source\Multimap.cpp" />
     <ClCompile Include="Utility\source\Random.cpp" />
     <ClCompile Include="Utility\source\Result.cpp" />
     <ClCompile Include="Utility\source\Timer.cpp" />
@@ -152,6 +153,7 @@
     <ClInclude Include="Graphics\CommandBuffer.h" />
     <ClInclude Include="Graphics\CommandPool.h" />
     <ClInclude Include="Graphics\DebugMessenger.h" />
+    <ClInclude Include="Graphics\DescriptorSet.h" />
     <ClInclude Include="Graphics\Device.h" />
     <ClInclude Include="Graphics\Fence.h" />
     <ClInclude Include="Graphics\Frame.h" />
@@ -169,7 +171,6 @@
     <ClInclude Include="Graphics\StagingBuffer.h" />
     <ClInclude Include="Graphics\SwapChain.h" />
     <ClInclude Include="Graphics\Vertex.h" />
-    <ClInclude Include="Graphics\VertexBuffer.h" />
     <ClInclude Include="Graphics\Vulkan.h" />
     <ClInclude Include="Graphics\WindowRenderer.h" />
     <ClInclude Include="Graphics\GraphicsHelper.h" />
@@ -178,8 +179,10 @@
     <ClInclude Include="Utility\Event.h" />
     <ClInclude Include="Utility\File.h" />
     <ClInclude Include="Utility\HeapBuffer.h" />
+    <ClInclude Include="Utility\Multimap.h" />
     <ClInclude Include="Utility\Optional.h" />
     <ClInclude Include="Utility\PerformanceLogger.h" />
+    <ClInclude Include="Utility\PrimitiveType.h" />
     <ClInclude Include="Utility\Random.h" />
     <ClInclude Include="Graphics\Surface.h" />
     <ClInclude Include="Utility\Timer.h" />

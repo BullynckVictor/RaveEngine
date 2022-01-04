@@ -120,6 +120,11 @@ void rv::CommandBuffer::BindIndexBuffer(const IndexBuffer& indices) const
 	vkCmdBindIndexBuffer(buffer, indices.buffer, 0, indices.type);
 }
 
+void rv::CommandBuffer::BindDescriptorSet(const DescriptorSet& set, const PipelineLayout& layout, PipelineType type)
+{
+	vkCmdBindDescriptorSets(buffer, (VkPipelineBindPoint)type, layout.layout, 0, 1, &set.set, 0, nullptr);
+}
+
 void rv::CommandBuffer::Draw(u32 nVertices, u32 nInstances, u32 vertexOffset, u32 instanceOffset) const
 {
 	vkCmdDraw(buffer, nVertices, nInstances, vertexOffset, instanceOffset);

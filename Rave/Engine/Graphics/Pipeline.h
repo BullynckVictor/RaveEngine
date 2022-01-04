@@ -3,6 +3,7 @@
 #include "Engine/Graphics/Shader.h"
 #include "Engine/Graphics/RenderPass.h"
 #include "Engine/Graphics/Vertex.h"
+#include "Engine/Graphics/DescriptorSet.h"
 #include <type_traits>
 
 namespace rv
@@ -21,8 +22,11 @@ namespace rv
 		bool blending = false;
 		std::vector<const char*> shaders;
 		VertexDescriptor vertex;
+		std::vector<VkDescriptorSetLayout> setLayouts;
 
-		size_t rehash();
+		void AddLayout(const DescriptorSetLayout& layout);
+
+		size_t Rehash();
 	};
 
 	struct PipelineLayout
@@ -49,6 +53,7 @@ namespace rv
 		void SetBlending(bool blend);
 		void AddShader(const Shader& shader);
 		void AddRenderPass(const RenderPass& pass, u32 subpass);
+		void AddLayout(const DescriptorSetLayout& layout);
 		template<VertexConcept V>
 		void SetVertexType()
 		{
@@ -71,6 +76,7 @@ namespace rv
 		VkPipelineColorBlendStateCreateInfo colorBlending{};
 		std::vector<VkPipelineShaderStageCreateInfo> shaderStages;
 		VkRenderPass pass = VK_NULL_HANDLE;
+		std::vector<VkDescriptorSetLayout> setLayouts;
 		u32 subpass = 0;
 		const Device* device = nullptr;
 	};
